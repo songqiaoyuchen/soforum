@@ -1,6 +1,7 @@
 import { jsx as _jsx } from "react/jsx-runtime";
-import './App.css';
+import LoginPage from './pages/LoginPage/';
 function App() {
-    return (_jsx("h1", { children: "hello world" }));
+    console.log('App component rendered');
+    return (_jsx(LoginPage, {}));
 }
-export default App;
+export default App; // Ensure this is a default export

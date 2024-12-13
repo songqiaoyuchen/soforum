@@ -1,10 +1,11 @@
 import React from 'react';
-import './App.css';
+import LoginPage from './pages/LoginPage/';
 
 function App() {
+  console.log('App component rendered');
   return (
-    <h1>hello world</h1>
+    <LoginPage />
   );
 }
 
-export default App;
+export default App; // Ensure this is a default export
