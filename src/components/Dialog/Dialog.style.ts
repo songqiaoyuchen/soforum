@@ -1,4 +1,5 @@
 import { styled } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 export const StyledDialog = styled(Dialog) ({
@@ -21,5 +22,17 @@ export const StyledDialogTitle = styled(DialogTitle)({
   paddingBottom: '0px'
 });
 
+export const ImageBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  height: "300px",
+}));
+
+export const Image = styled("img")(({ theme }) => ({
+  width: "100px",
+  height: "100px",
+  borderRadius: "8px",
+}));
 
 

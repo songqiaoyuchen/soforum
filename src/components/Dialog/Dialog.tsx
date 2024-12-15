@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import { Button, TextField, Box } from '@mui/material';
-import { StyledDialog, StyledDialogContent, StyledDialogTitle, StyledDialogActions } from './Dialog.style';
+import { StyledDialog, StyledDialogContent, StyledDialogTitle, StyledDialogActions, 
+         Image, ImageBox } from './Dialog.style';
 import frogLook from '../../assets/images/frog-look.png';
 import frogClose from '../../assets/images/frog-close.png'
 
@@ -8,6 +9,7 @@ interface DialogProps {
     open: boolean;
     onClose: (event: Object, reason: String) => void;
     type: 'login' | 'signup';
+    onLogin: (event: Object, reason: String) => void;
   }
 
 function CustomDialog(props: DialogProps) {
@@ -21,24 +23,18 @@ function CustomDialog(props: DialogProps) {
     return (
         <StyledDialog {...props} fullWidth>
             <Box display="flex" justifyContent="center">
-                <Box  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    height: '300px',
-                }}>
-                    <img
+                <ImageBox>
+                    <Image
                     src={typingPassword ? frogClose : frogLook}
                     alt="dialog image"
-                    style={{ width: "100px", 
-                             height: "100px", 
-                             borderRadius: "8px",
-                             transform: 'scaleX(-1)' }}
+                    style={{ transform: 'scaleX(-1)' }}
                     />
-                </Box>
+                </ImageBox>
                 
                 <Box width="100%" maxWidth="70%">
                     <StyledDialogTitle>{props.type === "login" ? "Login" : "Signup"}</StyledDialogTitle>
+
+                    {/* Input Fields */}
                     <StyledDialogContent>
                     <Box display="flex" flexDirection="column" gap={2} width="100%">
                         {/* Username Field */}
@@ -48,6 +44,7 @@ function CustomDialog(props: DialogProps) {
                         variant="outlined"
                         fullWidth
                         />
+                        
                         {/* Password Field */}
                         <TextField
                         label="Password"
@@ -59,29 +56,30 @@ function CustomDialog(props: DialogProps) {
                         />
                     </Box>
                     </StyledDialogContent>
+
+                    {/* Buttons */}
                     <StyledDialogActions>
-                        {/* Cancel Button */}
+                        {/* Cancel button */}
                         <Button onClick={(e) => props.onClose(e, 'trivial')} color="secondary">
                             Cancel
                         </Button>
-                        {/* Login / Signup Button */}
-                        <Button onClick={(e) => props.onClose(e, 'trivial')} variant="contained" color="primary">
+
+                        {/* Login / Signup button */}
+                        <Button onClick={(e) => {
+                            props.onLogin(e, "trivial");
+                        }} variant="contained" color="primary">
                             {props.type}
                         </Button>
                     </StyledDialogActions>
                 </Box>
-                <Box  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    height: '300px', 
-                }}>
-                    <img
+
+                <ImageBox>
+                    <Image
                     src={typingPassword ? frogClose : frogLook}
                     alt="dialog image"
-                    style={{ width: "100px", height: "100px", borderRadius: "8px" }}
                     />
-                </Box>
+                </ImageBox>
+                    
             </Box>
       </StyledDialog>
     );
