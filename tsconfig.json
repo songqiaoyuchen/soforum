@@ -3,6 +3,7 @@
       "target": "ES6",
       "lib": ["dom", "esnext"],
       "jsx": "react-jsx",
+      "types": ["react", "react-dom"],
       "moduleResolution": "node",
       "strict": true,
       "noImplicitAny": true,

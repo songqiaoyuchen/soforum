@@ -1,58 +1,61 @@
+// External Libraries
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Box, Container, Button } from '@mui/material';
+
+// Local Components
 import Dialog from '../../components/Dialog';
-import {Box, Button} from '@mui/material';
+import Sidenav from '../../components/Sidenav';
+import Topbar from '../../components/Topbar';
+import Threads from '../../components/Threads';
+import PopupActions from '../../components/SpeedDial';
+import ProfilePopup from '../../components/ProfilePopup';
 
-const HomePage = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isOpen, setIsOpen] = useState(false); 
-    const navigate = useNavigate();
+function HomePage() {
+  const [isProfileOpen, setProfileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-
-    
-    function toggleOpen(event: Object, reason: String): void {
-        if (reason !== 'backdropClick') {
-        setIsOpen(!isOpen);  
-        }
+  function handleProfileClick(event: React.MouseEvent<HTMLElement>) {
+    if (isLoggedIn) {
+      setAnchorEl(event.currentTarget);
+      setProfileOpen((prev) => !prev);
+    } else {
+      setLoginOpen(true)
     }
+  }
 
-    const handleLogin = () => {
-        setIsLoggedIn(true);
-    };
+  const [isLoginOpen, setLoginOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    if (!isLoggedIn) {
-        return (
-            <Box 
-                sx={{
-                display: 'flex',
-                justifyContent: 'center', 
-                alignItems: 'center',
-                height: '100vh',
-                }}
-            >
-      
-            {/* Login Button */}
-            <Button variant="contained" color="primary" onClick={() => setIsOpen(true)}>
-              Login
-            </Button>
-      
-            {/* Login Form */}
-            <Dialog 
-                open={isOpen} 
-                onClose={toggleOpen} 
-                type="login" 
-                onLogin={handleLogin} 
-            />
-            </Box>
-        );
-    }
+  function handleLogin() {
+    setIsLoggedIn(true);
+    setLoginOpen(false)
+  };
 
-    return (
-        <div>
-            <h1>Home Page</h1>
-            <button onClick={() => navigate('/profile')}>Go to Profile</button>
-        </div>
-    );
-};
+  return (
+    <Box>
+      <Topbar onProfileClick={handleProfileClick} />
+
+      <Box sx={{display: 'flex'}}>
+        <Sidenav />
+        <Threads />
+      </Box>
+
+      <ProfilePopup open={isProfileOpen} anchorEl={anchorEl} onClose={() => setProfileOpen(false)}/>
+      <PopupActions />
+      <Dialog 
+        open={isLoginOpen} 
+        type="login" 
+        onClose={() => setLoginOpen(false)}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            handleLogin()
+          }
+        }}
+      />
+    </Box>
+  )  
+}
 
 export default HomePage;

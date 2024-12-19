@@ -5,5 +5,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
 import theme from './styles/theme';
+import './styles/style.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(_jsx(React.StrictMode, { children: _jsxs(ThemeProvider, { theme: theme, children: [_jsx(CssBaseline, {}), _jsx(App, {})] }) }));

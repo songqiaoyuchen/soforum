@@ -1,6 +1,12 @@
 import { createTheme, ThemeOptions } from '@mui/material/styles';
 
 const themeOptions: ThemeOptions = {
+  breakpoints: {
+    values: {
+      ...createTheme().breakpoints.values, // Include default breakpoints
+      xs: 425,
+      xxs: 0,
+    }},
   palette: {
     mode: 'dark',
     primary: {
@@ -16,6 +22,6 @@ const themeOptions: ThemeOptions = {
   },
 };
 
-const theme = createTheme(themeOptions);
+const theme = createTheme(themeOptions as ThemeOptions);
 
 export default theme;
