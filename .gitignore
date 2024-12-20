@@ -11,6 +11,8 @@
 # Ignore node_modules
 node_modules
 
+# Ignore VS Code settings
+.vscode
 
 # dependencies
 /node_modules
