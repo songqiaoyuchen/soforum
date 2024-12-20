@@ -1,10 +1,30 @@
-# Getting Started with Create React App
+# Soforum: Personal Web Forum Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is done for the CVWO 2025 Holiday Assignment, but mainly aimed for self-learning of foundational web development skills.
 
-## Available Scripts
+## Project Plan
 
-In the project directory, you can run:
+### Structure
+
+- **Frontend**: React library with Typescript\
+  **Backend**: Go with Gin (TBD) framework
+
+- **State Management**: Redux \
+  **UI Component Library**: Material UI \
+  **Authentication**: OAuth or JWT (TBD) \
+  **Deployment**: AWS (TBD)
+
+### Features
+
+- Basic CRUD operations: **Create**, **Read**, **Update** and **Delete** forum threads
+- **Upvote**, **Downvote** and **Comment** operations for forum threads
+- Basic **Authentication** system based on username and password
+- Basic **Sort** and **Search** operations based on relevancy, popularity and time with a **Category** system
+- User customisation of the web forum's appearance with minimally light/dark **Themes** 
+- *Authentication based on external accounts: e.g. Login with Github (TBC)*
+- *User profile page and social functions such as follow and personal message (TBC)*
+
+## This project was bootstrapped with Create React App.
 
 ### `npm start`
 
@@ -38,9 +58,3 @@ If you aren’t satisfied with the build tool and configuration choices, you can
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
