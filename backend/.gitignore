@@ -1,0 +1,14 @@
+# Ignore temporary files
+/tmp
+/cmd/tmp
+
+# Ignore env files
+.env
+
+# Ignore node_modules for backend
+node_modules
+
+# Ignore other potential files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
