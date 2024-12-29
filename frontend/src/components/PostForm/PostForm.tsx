@@ -128,15 +128,9 @@ function PostForm() {
             
         {/* Submit and cancel buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: 2 }}>
-          <Link
-            href="/"
-            variant="body2"
-            sx={{ alignSelf: 'center' }}
-          >
-            <Button variant="outlined" color="secondary" onClick={handleCancel}>
-              cancel
-            </Button>           
-           </Link>
+          <Button variant="outlined" color="secondary" onClick={handleCancel}>
+            cancel
+          </Button>           
           <Button variant="contained" color="primary" type="submit">
             Post
           </Button>

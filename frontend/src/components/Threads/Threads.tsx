@@ -12,6 +12,7 @@ function Threads() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const fetchedOnce = useRef(false);
 
   async function loadThreads(pageNumber: number) {
     setLoading(true);
@@ -28,7 +29,9 @@ function Threads() {
   };
 
   useEffect(() => {
+    if (fetchedOnce.current) return;
     loadThreads(page);
+    fetchedOnce.current = true;
   }, [page]);
 
   const handleSeeMoreClick = () => {
