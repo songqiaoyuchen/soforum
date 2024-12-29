@@ -28,30 +28,30 @@ This project is done for the CVWO 2025 Holiday Assignment, but mainly aimed for 
 - *Optimise loading time of web forum (TBU)*
 - *Optional content filtering powered by AI (TBU)*
 
-## Setting up the web application
+## Prerequisites
 
-### `$ cd frontend/`
-- *Optional content filtering powered by AI (TBU)*
+- PosgreSQL, Node.js and Go (Golang) installed
+- Setup your .env file under */backend* with following environment variables according to your pgAdmin settings
+  - JWT_SECRET_KEY: any
+  - DB_NAME: database name
+  - DB_USER: database username
+  - DB_PASSWORD: database password
 
 ## Setting up the web application
 
 ### `$ cd frontend/`
 
 Navigates to the frontend directory.
-Navigates to the frontend directory.
+
+### `$ npm install`
+
+Install necessary dependencies.
 
 ### `$ npm run dev`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### `$ cd backend/cmd/` 
-
-Navigates to the directory where `main.go` is located
-
-### `$ air`
-
-Runs the backend server on [http://localhost:8080](http://localhost:8080).
 ### `$ cd backend/cmd/` 
 
 Navigates to the directory where `main.go` is located
