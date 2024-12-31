@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Button, TextField, MenuItem, Select, 
-  FormControl, InputLabel, FormHelperText, 
-  Link} from '@mui/material';
+  FormControl, InputLabel, FormHelperText, } from '@mui/material';
+  import { jwtDecode } from 'jwt-decode';
 
 import { validPost } from '@/utils/validation';
 import { postThread } from '@/api/thread';
@@ -37,8 +37,20 @@ function PostForm() {
       return;
     }
 
+    // Decode the JWT token to get the username
+    const token = sessionStorage.getItem('jwtToken')
+    let userID;
+
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        userID = decodedToken.sub;
+      } catch (error) {
+        console.error('Error decoding JWT:', error);
+      }
+    }
+
     const postData = {
-      "username": "admin",
       "title": title,
       "content": content,
       "category": category,

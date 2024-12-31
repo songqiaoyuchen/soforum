@@ -54,16 +54,24 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Optionally, store the user info in the context (e.g., user ID)
-		// claims, ok := token.Claims.(jwt.MapClaims)
-		// if !ok || !token.Valid {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
-		// 	c.Abort()
-		// 	return
-		// }
+		// Extract username from JWT "sub" claim
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+			c.Abort()
+			return
+		}
 
-		// Store user data (e.g., user_id) in the context for later use
-		// c.Set("user_id", claims["user_id"])
+		// Set the username in the context
+		username, exists := claims["sub"].(string)
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Username not found in token"})
+			c.Abort()
+			return
+		}
+
+		// Add the username to the context for further use in the handler
+		c.Set("username", username)
 
 		// Proceed to the next handler
 		c.Next()

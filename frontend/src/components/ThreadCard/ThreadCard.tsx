@@ -44,7 +44,7 @@ function ThreadCard(props: {thread: Thread}) {
           variant="subtitle2"
           sx={{display: 'flex', gap: '20px'}}>
           <Box># {props.thread.category}</Box>
-          <Box>• {relativeTime}</Box>
+          <Box>• {relativeTime} by {props.thread.username}</Box>
         </Typography>
         {/* Title */}
         <Typography

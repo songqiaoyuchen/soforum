@@ -1,5 +1,6 @@
 export interface Thread {
   id: number;
+  username: string;
   title: string;
   content: string;
   category: string
@@ -7,7 +8,6 @@ export interface Thread {
 }
 
 export interface PostData {
-  username: string;
   title: string;
   content: string;
   category: string

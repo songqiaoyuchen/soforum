@@ -19,22 +19,22 @@ func PostThread(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	// Look up user_id based on the provided username
-	var userID int
-	err := db.QueryRow("SELECT id FROM users WHERE username = $1", newThread.Username).Scan(&userID)
+	// Retrieve the username from the context (set by JWTMiddleware)
+	username, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	// Look up the user ID based on the username
+	user, err := models.GetUserIDByUsername(username.(string), db)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			// If no user was found with the provided username
-			c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
-		} else {
-			// If there's a different error (e.g., database connection issues)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error", "message": err.Error()})
-		}
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}
 
 	// Insert the new thread into the database
-	err = models.InsertThread(db, userID, newThread.Title, newThread.Content, newThread.Category)
+	err = models.InsertThread(db, user.ID, newThread.Title, newThread.Content, newThread.Category)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to insert thread", "message": err.Error()})
 		return

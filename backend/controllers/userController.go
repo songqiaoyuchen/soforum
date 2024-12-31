@@ -100,7 +100,7 @@ func UserLogin(c *gin.Context, db *sql.DB) {
 	}
 
 	// Generate JWT token
-	token, err := utils.GenerateJWT(user.Username)
+	token, err := utils.GenerateJWT(loginData.Username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate JWT token"})
 		return
