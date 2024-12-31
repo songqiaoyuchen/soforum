@@ -1,13 +1,22 @@
 import { Thread } from "@/types/thread";
 import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { parse, formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
 
 
 function ThreadCard(props: {thread: Thread}) {
   const router = useRouter();
+   // Helper to parse SQL timestamp into a valid ISO string
+  const parseSQLTimestamp = (timestamp: string) => {
+    const isoString = timestamp.replace(' ', 'T').split('.')[0]; // Replace space with 'T' and trim after seconds
+    return new Date(isoString);
+  };
+
+  const parsedDate = parseSQLTimestamp(props.thread.created_at);
+  const relativeTime = formatDistanceToNowStrict(parsedDate, { addSuffix: true });
   
   return (
-    <Button onClick={() => router.push("/")} variant="text"
+    <Box onClick={() => router.push("/")}
       sx={{
         borderTop: 2,
         borderRadius: 1,
@@ -32,8 +41,10 @@ function ThreadCard(props: {thread: Thread}) {
       }}>
         {/* Category... */}
         <Typography
-          variant="subtitle2">
-          # {props.thread.category}
+          variant="subtitle2"
+          sx={{display: 'flex', gap: '20px'}}>
+          <Box># {props.thread.category}</Box>
+          <Box>• {relativeTime}</Box>
         </Typography>
         {/* Title */}
         <Typography
@@ -59,7 +70,7 @@ function ThreadCard(props: {thread: Thread}) {
           Interactions TBU
         </Box>
       </Box>
-    </Button>
+    </Box>
   );
 }
 
