@@ -2,6 +2,7 @@ export interface Thread {
   id: number;
   title: string;
   content: string;
+  category: string
 }
 
 export interface PostData {

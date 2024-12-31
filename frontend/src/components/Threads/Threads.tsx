@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Box, Button, Stack, CircularProgress } from '@mui/material';
 import { fetchThreads } from '@api/thread';
 import { Thread } from '@/types/thread';
+import ThreadCard from '../ThreadCard/ThreadCard';
 
 const bg = '/images/bg.webp';
 
@@ -88,30 +89,6 @@ function Threads() {
           </Button>
         </Box>
       )}
-    </Box>
-  );
-}
-
-function ThreadCard({ thread }: { thread: Thread }) {
-  return (
-    <Box
-      sx={{
-        border: 1,
-        borderRadius: 1,
-        padding: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        height: '150px',
-        bgcolor: 'rgba(6, 20, 0, 0.5)',
-        color: 'white',
-        boxShadow: 3,
-      }}
-    >
-      <h3>{thread.title}</h3>
-      <Button variant="outlined" sx={{ alignSelf: 'flex-start' }}>
-        Read More
-      </Button>
     </Box>
   );
 }

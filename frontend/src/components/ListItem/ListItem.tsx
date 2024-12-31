@@ -8,7 +8,7 @@ interface CustomListItemProps {
 
 function CustomListItem(props: CustomListItemProps) {
   return (
-    <Link href="/" underline="none" color="white">
+    <Link href="/" underline="none" color="text.primary">
     <ListItem key={props.text} sx={{padding: '0px 16px'}}>
       <ListItemButton sx={{borderRadius: '8px'}}>
         <ListItemIcon>
