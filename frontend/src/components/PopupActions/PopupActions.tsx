@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import CreateIcon from '@mui/icons-material/Create';
-import { Link } from '@mui/material';
 
 function ControlledOpenSpeedDial() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   function handleOpen() {
@@ -36,9 +37,14 @@ function ControlledOpenSpeedDial() {
       
     >
       <SpeedDialAction
-        key="Share"
-        icon={<Link href={"/post"} sx={{height: '24px', color: 'white'}}><CreateIcon /></Link>}
-        tooltipTitle="Share"
+        key="PostText"
+        icon={<CreateIcon />}
+        onClick={() => router.push("/post")}
+        tooltipTitle="Post Text"
+        sx={{
+          color: 'white',
+          backgroundColor: 'primary.light'
+        }}
       />
     </SpeedDial>
   );

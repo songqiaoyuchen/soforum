@@ -13,10 +13,11 @@ function Threads() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const fetchedOnce = useRef(false);
+  const fetchedOnce = useRef(false); // Avoid React Strict Mode Re-render, no effects on production
 
   async function loadThreads(pageNumber: number) {
     setLoading(true);
+    fetchedOnce.current = true;
 
     try {
       const newThreads = await fetchThreads(pageNumber);
@@ -26,13 +27,14 @@ function Threads() {
       console.error("Failed to fetch threads:", error);
     } finally {
       setLoading(false);
+      fetchedOnce.current = false;
     }
   };
 
   useEffect(() => {
     if (fetchedOnce.current) return;
     loadThreads(page);
-    fetchedOnce.current = true;
+
   }, [page]);
 
   const handleSeeMoreClick = () => {
