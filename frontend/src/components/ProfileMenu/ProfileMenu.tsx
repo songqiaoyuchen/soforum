@@ -10,31 +10,40 @@ import ContentPaste from '@mui/icons-material/ContentPaste';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useMediaQuery, useTheme } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@store';
+import { closeMenu } from '@store/menuSlice';
+import { logout } from '@store/authSlice';
 
 
-interface ProfilePopupProps {
-  open: boolean,
-  anchorEl: HTMLElement | null,
-  onClose: () => void
-  onLogout: () => void
-}
-
-function ProfilePopup(props: ProfilePopupProps) {
+function ProfilePopup() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
+
+  const dispatch = useDispatch(); 
+  const isOpen = useSelector((state: RootState) => state.menu.isOpen);
+
+  function handleClose() {
+    dispatch(closeMenu())
+  }
+
+  function handleLogout() {
+    dispatch(logout());
+    dispatch(closeMenu());
+  }
 
   return (
     <SwipeableDrawer
       anchor={isSmallScreen ? 'bottom' : 'right'}
-      open={props.open}
-      onClose={props.onClose}
-      onOpen={props.onClose}
+      open={isOpen}
+      onClose={handleClose}
+      onOpen={handleClose}
       sx={{zIndex: 1300}}
     >
       <MenuList sx={{
         width: {xxs: '100%', xs: '300px'}
       }}>
-        <MenuItem onClick={props.onClose}>
+        <MenuItem>
           <ListItemIcon>
             <ContentCut fontSize="small" />
           </ListItemIcon>
@@ -43,7 +52,7 @@ function ProfilePopup(props: ProfilePopupProps) {
             ⌘X
           </Typography>
         </MenuItem>
-        <MenuItem onClick={props.onClose}>
+        <MenuItem>
           <ListItemIcon>
             <ContentCopy fontSize="small" />
           </ListItemIcon>
@@ -52,7 +61,7 @@ function ProfilePopup(props: ProfilePopupProps) {
             ⌘C
           </Typography>
         </MenuItem>
-        <MenuItem onClick={props.onClose}>
+        <MenuItem>
           <ListItemIcon>
             <ContentPaste fontSize="small" />
           </ListItemIcon>
@@ -62,9 +71,7 @@ function ProfilePopup(props: ProfilePopupProps) {
           </Typography>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => {
-          props.onLogout();
-          props.onClose();}}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>

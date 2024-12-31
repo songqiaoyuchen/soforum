@@ -6,8 +6,8 @@ import { Box, Button, TextField, MenuItem, Select,
   FormControl, InputLabel, FormHelperText, } from '@mui/material';
   import { jwtDecode } from 'jwt-decode';
 
-import { validPost } from '@/utils/validation';
-import { postThread } from '@/api/thread';
+import { validPost } from '@utils/validation';
+import { postThread } from '@api/thread';
 
 // Component for the post form
 function PostForm() {

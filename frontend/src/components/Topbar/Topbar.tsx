@@ -4,15 +4,26 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
-import ProfilePopup from '../ProfilePopup'
-import Search from '../Search';
+import Search from '@components/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@store';
+import { openDialog } from '@store/dialogSlice';
+import { openMenu } from '@store/menuSlice';
 
-interface TopbarProps {
-  onProfileClick: (event: React.MouseEvent<HTMLElement>) => void;
-}
+function Topbar() {
+  const dispatch = useDispatch(); 
+  const username = useSelector((state: RootState) => state.auth.username);
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
-function Topbar(props: TopbarProps) {
+  function onProfileClick() {
+    if (isLoggedIn) {
+      dispatch(openMenu());
+    } else {
+      dispatch(openDialog());
+    }
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ 
@@ -41,6 +52,10 @@ function Topbar(props: TopbarProps) {
           >
             FORUM
           </Typography>
+          <Typography>
+            {/* !!! styling needed !!! */}
+            {isLoggedIn ? "welcome " + username : "please login"} 
+          </Typography>
           {/* Spacing Box */}
           <Box sx={{ flexGrow: 1 }} /> 
           {/* Search Field */}
@@ -51,7 +66,7 @@ function Topbar(props: TopbarProps) {
             edge="end"
             aria-label="account of current user"
             aria-haspopup="true"
-            onClick={props.onProfileClick}
+            onClick={onProfileClick}
             color="inherit"
           >
             <AccountCircle />

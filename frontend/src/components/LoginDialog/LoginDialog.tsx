@@ -1,27 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
+// Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '@store/authSlice';
+import { RootState } from '@store';
+import { closeDialog } from '@store/dialogSlice';
+
 import Image from 'next/image';
+const frogLook = '/images/frog-look.webp';
+const frogClose = '/images/frog-close.webp';
 import { Box, Button, TextField, Link, Dialog, 
   DialogActions, DialogTitle, DialogContent, Typography } from '@mui/material';
 
-import { validPassword, validUsername } from '@/utils/validation';
+// Utils
+import { validPassword, validUsername } from '@utils/validation';
+import { userLogin } from '@api/user';
 
-const frogLook = '/images/frog-look.webp';
-const frogClose = '/images/frog-close.webp';
-
-interface CustomDialogProps {
-  type: "login" | "signup",
-  open: boolean,
-  onClose: (event?: {}, reason?: "backdropClick" | "escapeKeyDown") => void,
-  onSubmit: (formData: { username: string; password: string; }) => Promise<string | undefined>
-}
-
-function CustomDialog(props: CustomDialogProps) {
-  // Frog image state
-  const [typingPassword, setTypingPassword] = useState(false);
+function CustomDialog() {
+  const dispatch = useDispatch(); 
+  const isOpen = useSelector((state: RootState) => state.dialog.isOpen);
 
   // Toggle to frogClose if password is being typed
+  const [typingPassword, setTypingPassword] = useState(false);
   function toggleFrog() {
     if (password) {
       setTypingPassword(true);
@@ -52,7 +54,7 @@ function CustomDialog(props: CustomDialogProps) {
     setLoading(false);
   }
 
-  async function handleFormSubmit(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
     // Reset error messages
@@ -70,9 +72,12 @@ function CustomDialog(props: CustomDialogProps) {
 
     setLoading(true);
     try {
-      const errorMessage = await props.onSubmit({ username, password });
-      if (errorMessage) {
-        setAuthError("Login failed: " + errorMessage); 
+      const result = await userLogin({username: username, password: password});
+      if (result.success) {
+        dispatch(login(username));
+        dispatch(closeDialog());
+      } else {
+        setAuthError("Login failed: " + result.message); 
       }
     } catch (err) {
       console.error("Unexpected error:", err);
@@ -86,18 +91,18 @@ function CustomDialog(props: CustomDialogProps) {
 
   return (
     <Dialog 
-      open={props.open}
+      open={isOpen}
       onClose={
         (event, reason) => {
           if (reason !== 'backdropClick') {
             resetFields();
-            props.onClose(event, reason);
+            dispatch(closeDialog());
           }}
         }
       fullWidth
       PaperProps={{
         component: 'form',
-        onSubmit: props.onSubmit
+        onSubmit: handleLogin
       }}
     >
       <Box sx={{
@@ -132,7 +137,7 @@ function CustomDialog(props: CustomDialogProps) {
         }}>
           {/* Form Title */}
           <DialogTitle sx={{paddingTop: '24px', paddingBottom: '0px'}}>
-            {props.type.toUpperCase()}
+            Login
           </DialogTitle>
 
           {/* Input Fields */}
@@ -205,7 +210,7 @@ function CustomDialog(props: CustomDialogProps) {
             <Button 
               onClick={() => {
                 resetFields();
-                props.onClose();
+                dispatch(closeDialog())
               }} 
               color="secondary"
               sx={{
@@ -218,7 +223,7 @@ function CustomDialog(props: CustomDialogProps) {
             {/* Login / Signup button */}
             <Button 
               type='submit'
-              onClick={handleFormSubmit}
+              onClick={handleLogin}
               variant="contained" 
               color="primary"
               disabled={loading}
@@ -227,7 +232,7 @@ function CustomDialog(props: CustomDialogProps) {
                 width: {xxs: '100%', sm: '72px'},
               }}
             >
-              {loading ? "..." : props.type.toLocaleUpperCase()}
+              LOGIN
             </Button>
           </DialogActions>
         </Box>

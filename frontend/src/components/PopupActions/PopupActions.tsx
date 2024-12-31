@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@store';
 
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
@@ -10,14 +12,23 @@ import CreateIcon from '@mui/icons-material/Create';
 
 function ControlledOpenSpeedDial() {
   const router = useRouter();
+
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const [open, setOpen] = useState(false);
 
   function handleOpen() {
     setOpen(true);
   }
-
   function handleClose() {
     setOpen(false);
+  }
+
+  function handleClickPen() {
+    if (isLoggedIn) {
+      router.push("/post");
+    } else {
+      
+    }
   }
 
   return (

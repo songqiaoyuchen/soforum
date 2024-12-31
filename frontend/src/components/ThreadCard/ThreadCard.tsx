@@ -1,7 +1,7 @@
 import { Thread } from "@/types/thread";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { parse, formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 
 
 function ThreadCard(props: {thread: Thread}) {

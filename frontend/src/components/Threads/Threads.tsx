@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Box, Button, Stack, CircularProgress } from '@mui/material';
 import { fetchThreads } from '@api/thread';
 import { Thread } from '@/types/thread';
-import ThreadCard from '@/components/ThreadCard';
+import ThreadCard from '@components/ThreadCard';
 
 const bg = '/images/bg.webp';
 

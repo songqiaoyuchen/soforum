@@ -21,7 +21,7 @@ import Typography from '@mui/material/Typography';
 import { Card, SignUpContainer} from './styles';
 
 // Static Assets
-import { GoogleIcon } from '@icons/customIcons';
+import { GoogleIcon } from '../../../public/icons/customIcons';
 
 interface SignupData {
   username: string;
