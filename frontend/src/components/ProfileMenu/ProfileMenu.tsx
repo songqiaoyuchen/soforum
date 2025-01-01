@@ -10,26 +10,26 @@ import ContentPaste from '@mui/icons-material/ContentPaste';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@store';
+import { useSelector } from 'react-redux';
+import store, { RootState } from '@store';
 import { closeMenu } from '@store/menuSlice';
-import { logout } from '@store/authSlice';
+import { clearAuthState } from '@store/authSlice';
 
 
 function ProfilePopup() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
-  const dispatch = useDispatch(); 
   const isOpen = useSelector((state: RootState) => state.menu.isOpen);
 
   function handleClose() {
-    dispatch(closeMenu())
+    store.dispatch(closeMenu())
   }
 
   function handleLogout() {
-    dispatch(logout());
-    dispatch(closeMenu());
+    store.dispatch(clearAuthState());
+    sessionStorage.removeItem('jwt');
+    store.dispatch(closeMenu());
   }
 
   return (

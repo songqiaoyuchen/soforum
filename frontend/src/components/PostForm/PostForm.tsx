@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Button, TextField, MenuItem, Select, 
   FormControl, InputLabel, FormHelperText, } from '@mui/material';
-  import { jwtDecode } from 'jwt-decode';
 
-import { validPost } from '@utils/validation';
+import { validPost } from '@utils/validInputs';
 import { postThread } from '@api/thread';
 
 // Component for the post form
@@ -35,19 +34,6 @@ function PostForm() {
     if (!isValid) {
       setErrors(errors);
       return;
-    }
-
-    // Decode the JWT token to get the username
-    const token = sessionStorage.getItem('jwtToken')
-    let userID;
-
-    if (token) {
-      try {
-        const decodedToken: any = jwtDecode(token);
-        userID = decodedToken.sub;
-      } catch (error) {
-        console.error('Error decoding JWT:', error);
-      }
     }
 
     const postData = {

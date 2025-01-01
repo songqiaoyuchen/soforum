@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 
 // Redux
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '@store/authSlice';
-import { RootState } from '@store';
+import { useSelector } from 'react-redux';
+import { setAuthState } from '@store/authSlice';
+import store, { RootState } from '@store';
 import { closeDialog } from '@store/dialogSlice';
 
 import Image from 'next/image';
@@ -15,11 +15,11 @@ import { Box, Button, TextField, Link, Dialog,
   DialogActions, DialogTitle, DialogContent, Typography } from '@mui/material';
 
 // Utils
-import { validPassword, validUsername } from '@utils/validation';
+import { validPassword, validUsername } from '@utils/validInputs';
 import { userLogin } from '@api/user';
+import { initializeAuth } from '@utils/syncAuth';
 
-function CustomDialog() {
-  const dispatch = useDispatch(); 
+function CustomDialog() { 
   const isOpen = useSelector((state: RootState) => state.dialog.isOpen);
 
   // Toggle to frogClose if password is being typed
@@ -45,13 +45,14 @@ function CustomDialog() {
     toggleFrog();
   }, [password]);
 
-  function resetFields() {
+  function handleClose() {
     setUsername('');
     setPassword('');
     setUsernameError('');
     setPasswordError('');
     setAuthError('');
     setLoading(false);
+    store.dispatch(closeDialog());
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -74,8 +75,9 @@ function CustomDialog() {
     try {
       const result = await userLogin({username: username, password: password});
       if (result.success) {
-        dispatch(login(username));
-        dispatch(closeDialog());
+        store.dispatch(setAuthState({isLoggedIn: true, username: username}));
+        store.dispatch(closeDialog());
+        initializeAuth();
       } else {
         setAuthError("Login failed: " + result.message); 
       }
@@ -95,8 +97,7 @@ function CustomDialog() {
       onClose={
         (event, reason) => {
           if (reason !== 'backdropClick') {
-            resetFields();
-            dispatch(closeDialog());
+            handleClose();
           }}
         }
       fullWidth
@@ -187,17 +188,17 @@ function CustomDialog() {
             >
               Sign up
             </Link>
-            </Typography>
+          </Typography>
             
-            {/* Authentication Error Message */}
-            {authError && 
-              <Typography 
-                marginBottom="14px" 
-                color="error" 
-                fontSize={14}
-                textAlign={'center'}>
-                {authError}
-              </Typography>}
+          {/* Authentication Error Message */}
+          {authError && 
+            <Typography 
+              marginBottom="14px" 
+              color="error" 
+              fontSize={14}
+              textAlign={'center'}>
+              {authError}
+            </Typography>}
             
           {/* Buttons */}
           <DialogActions sx={{
@@ -208,10 +209,7 @@ function CustomDialog() {
           }}>
             {/* Cancel button */}
             <Button 
-              onClick={() => {
-                resetFields();
-                dispatch(closeDialog())
-              }} 
+              onClick={handleClose}
               color="secondary"
               sx={{
                 width: {xxs: '100%', sm: '72px'},

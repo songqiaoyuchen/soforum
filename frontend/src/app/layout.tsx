@@ -1,24 +1,19 @@
 'use client';
 
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
-
-import { Provider } from 'react-redux';
-import store, { persistor } from '@store';
-
-import theme from "@styles/theme";
-import "@styles/style.css"; 
+import "@styles/style.css";
 
 import { Box } from '@mui/material';
 import Topbar from '@components/Topbar';
 import Sidenav from '@components/Sidenav';
-import ProfilePopup from '@components/ProfileMenu';
+import ProfileMenu from '@components/ProfileMenu';
 import LoginDialog from '@components/LoginDialog';
 import PopupActions from '@components/PopupActions';
 
-
 import { usePathname } from 'next/navigation';
-import { PersistGate } from 'redux-persist/integration/react';
+import { useEffect } from 'react';
+import { initializeAuth } from '@utils/syncAuth';
+import AppProviders from '@providers/AppProviders';
+
 
 export default function RootLayout({
   children,
@@ -27,7 +22,10 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
 
-  // Skip wrapping `/signup` with RootLayout
+  useEffect(() => {
+    initializeAuth();
+  }, []);
+
   if (pathname.startsWith('/signup')) {
     return <>{children}</>;
   }
@@ -36,31 +34,19 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <ThemeProvider theme={theme}> 
-            <CssBaseline />  
-              <Box>
-              <Topbar />
-
-              <Box sx={{ display: 'flex' }}>
-                <Sidenav />
-                <Box sx={{ flexGrow: 1 }}>{children}</Box>
-              </Box>
-
-              <PopupActions />
-
-              <ProfilePopup />
-
-              <LoginDialog />
+        <AppProviders>
+          <Box>
+            <Topbar />
+            <Box sx={{ display: 'flex' }}>
+              <Sidenav />
+              <Box sx={{ flexGrow: 1 }}>{children}</Box>
             </Box>
-          </ThemeProvider>
-        </PersistGate>
-      </Provider>
+            <PopupActions />
+            <ProfileMenu />
+            <LoginDialog />
+          </Box>
+        </AppProviders>
       </body>
     </html>
   );
 }
-
-
-

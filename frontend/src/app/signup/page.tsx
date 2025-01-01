@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 // Utils Functions
-import { validPassword, validEmail, validUsername } from '@/utils/validation';
+import { validPassword, validEmail, validUsername } from '@utils/validInputs';
 
 // MUI Components
 import Box from '@mui/material/Box';

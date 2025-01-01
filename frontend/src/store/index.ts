@@ -1,44 +1,41 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage/session'; 
+import storage from 'redux-persist/lib/storage'; // Using localStorage
 import authReducer from './authSlice';
 import dialogReducer from './dialogSlice';
 import menuReducer from './menuSlice';
+import snackbarReducer from './snackbarSlice';
+import { combineReducers } from 'redux';
 
-const persistConfig = {
-  key: 'root',
-  storage, 
+// Persist configuration for the auth slice only
+const authPersistConfig = {
+  key: 'auth', // Key for the auth slice
+  storage,     // Using localStorage or sessionStorage
+  whitelist: ['auth'], // Only persist the auth slice
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
-
-// Combine reducers
+// Combine all reducers
 const rootReducer = combineReducers({
-  auth: persistedReducer,
-  dialog: dialogReducer,     
-  menu: menuReducer,          
+  auth: persistReducer(authPersistConfig, authReducer), // Persist only auth
+  dialog: dialogReducer,
+  menu: menuReducer,
+  snackbar: snackbarReducer,
 });
 
-// Configure store
+// Create the store with the persisted reducer
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [
-          'persist/PERSIST',
-          'persist/REHYDRATE',
-          'persist/FLUSH',
-          'persist/PAUSE',
-          'persist/PURGE',
-          'persist/REGISTER',
-        ],
-      },
+      serializableCheck: false, // Disable serializable check for redux-persist
     }),
 });
 
+// Persistor for the store
 export const persistor = persistStore(store);
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export default store;
+

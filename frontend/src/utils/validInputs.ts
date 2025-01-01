@@ -55,27 +55,3 @@ export function validPost(title: string, content: string, category: string)  {
 
   return {"isValid": isValid, "errors": formErrors};
 }
-
-export function validToken(token: string | null): boolean {
-  // Check if token exists
-  if (!token) {
-    console.error("Token required")
-    return false;
-  }
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const expiry = payload.exp;
-    
-    // Check if token is expired
-    if (expiry * 1000 < Date.now()) {
-      console.error("Token expired")
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Invalid token:", error);
-    return false;
-  }
-}

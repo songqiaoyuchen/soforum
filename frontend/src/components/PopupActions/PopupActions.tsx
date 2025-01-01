@@ -25,9 +25,11 @@ function ControlledOpenSpeedDial() {
 
   function handleClickPen() {
     if (isLoggedIn) {
-      router.push("/post");
+      // Proceed to post page
+      router.push('/post');
     } else {
-      
+      // Show an alert or redirect to the login page
+      alert('You must be logged in to post');
     }
   }
 
@@ -50,7 +52,7 @@ function ControlledOpenSpeedDial() {
       <SpeedDialAction
         key="PostText"
         icon={<CreateIcon />}
-        onClick={() => router.push("/post")}
+        onClick={handleClickPen}
         tooltipTitle="Post Text"
         sx={{
           color: 'white',
