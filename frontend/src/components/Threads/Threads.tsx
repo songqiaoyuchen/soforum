@@ -5,6 +5,8 @@ import { Box, Button, Stack, CircularProgress } from '@mui/material';
 import { fetchThreads } from '@api/thread';
 import { Thread } from '@/types/thread';
 import ThreadCard from '@components/ThreadCard';
+import { useSelector } from 'react-redux';
+import { RootState } from '@store';
 
 const bg = '/images/bg.webp';
 
@@ -14,13 +16,18 @@ function Threads() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const fetchedOnce = useRef(false); // Avoid React Strict Mode Re-render, no effects on production
+  const { searchQuery, category } = useSelector((state: RootState) => state.filters);
 
-  async function loadThreads(pageNumber: number) {
+  async function loadThreads(pageNumber: number, reset: boolean = false) {
     setLoading(true);
     fetchedOnce.current = true;
 
+    if (reset) {
+      setThreads([]);
+    }
+
     try {
-      const newThreads = await fetchThreads(pageNumber);
+      const newThreads = await fetchThreads(pageNumber, 10, category, searchQuery);
       setThreads((prevThreads) => [...prevThreads, ...newThreads]);
       setHasMore(newThreads.length >= 10);
     } catch (error) {
@@ -32,10 +39,16 @@ function Threads() {
   };
 
   useEffect(() => {
-    if (fetchedOnce.current) return;
-    loadThreads(page);
-
-  }, [page]);
+    if (!fetchedOnce.current) {
+      loadThreads(1, true); 
+    }
+  }, [searchQuery, category]); // Trigger reset when filters change
+  
+  useEffect(() => {
+    if (!fetchedOnce.current) {
+      loadThreads(page);
+    }
+  }, [page]); 
 
   const handleSeeMoreClick = () => {
     setPage((prevPage) => prevPage + 1);
@@ -49,6 +62,7 @@ function Threads() {
         bgcolor: 'background.default',
         padding: 3,
         display: 'flex',
+        minHeight: '100vh',
         flexDirection: 'column',
         backgroundImage: `url(${bg})`,
         backgroundSize: 'cover',

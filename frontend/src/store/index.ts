@@ -5,6 +5,7 @@ import authReducer from './authSlice';
 import dialogReducer from './dialogSlice';
 import menuReducer from './menuSlice';
 import snackbarReducer from './snackbarSlice';
+import filterReducer from './filterSlice';
 import { combineReducers } from 'redux';
 
 // Persist configuration for the auth slice only
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   dialog: dialogReducer,
   menu: menuReducer,
   snackbar: snackbarReducer,
+  filters: filterReducer
 });
 
 // Create the store with the persisted reducer

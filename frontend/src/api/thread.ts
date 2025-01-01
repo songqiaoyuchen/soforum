@@ -2,14 +2,16 @@ import axios from 'axios';
 import { Thread, PostData } from '@/types/thread';
 
 // Function to fetch threads from the database
-export async function fetchThreads(pageNumber: number, limit: number = 10)
+export async function fetchThreads(pageNumber: number, limit: number = 10, category: string, search: string)
   : Promise<Thread[]> 
 {
   try {
     const response = await axios.get(`http://localhost:8080/threads`, {
       params: {
         page: pageNumber,
-        limit: limit
+        limit: limit,
+        category: category,
+        search: search
       }
     });
     
