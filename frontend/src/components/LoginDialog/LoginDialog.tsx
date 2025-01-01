@@ -18,6 +18,7 @@ import { Box, Button, TextField, Link, Dialog,
 import { validPassword, validUsername } from '@utils/validInputs';
 import { userLogin } from '@api/user';
 import { initializeAuth } from '@utils/syncAuth';
+import { showSnackbar } from '@store/snackbarSlice';
 
 function CustomDialog() { 
   const isOpen = useSelector((state: RootState) => state.dialog.isOpen);
@@ -55,20 +56,24 @@ function CustomDialog() {
     store.dispatch(closeDialog());
   }
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-
-    // Reset error messages
-    setAuthError('');
+  function validateInputs() {
     setUsernameError('');
     setPasswordError('');
+    setAuthError('');
 
-    // Input validation before submitting request    
     if (!validPassword(password)) {
       setPasswordError('Please enter a valid password');
     } 
     if (!validUsername(username)) {
       setUsernameError('Please enter a valid username');
+    }
+  };
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (usernameError || passwordError) {
+      return;
     }
 
     setLoading(true);
@@ -77,8 +82,10 @@ function CustomDialog() {
       if (result.success) {
         store.dispatch(setAuthState({isLoggedIn: true, username: username}));
         store.dispatch(closeDialog());
+        store.dispatch(showSnackbar({message: 'Login successful', severity: 'success'}));
         initializeAuth();
       } else {
+        store.dispatch(showSnackbar({message: 'Login failed: ' + result.message, severity: 'error'}));
         setAuthError("Login failed: " + result.message); 
       }
     } catch (err) {
@@ -221,7 +228,7 @@ function CustomDialog() {
             {/* Login / Signup button */}
             <Button 
               type='submit'
-              onClick={handleLogin}
+              onClick={validateInputs}
               variant="contained" 
               color="primary"
               disabled={loading}

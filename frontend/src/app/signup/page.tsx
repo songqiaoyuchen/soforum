@@ -39,8 +39,6 @@ function SignUp() {
   const [usernameError, setUsernameError] = useState('');
   const [serverMessage, setServerMessage] = useState('');
 
-  const router = useRouter();
-
   function resetMsgs() {
     setEmailError('');
     setPasswordError('');

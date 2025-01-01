@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import { RootState } from '@store';
+import store, { RootState } from '@store';
 
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import CreateIcon from '@mui/icons-material/Create';
+import { showSnackbar } from '@store/snackbarSlice';
 
 function ControlledOpenSpeedDial() {
   const router = useRouter();
@@ -25,11 +26,9 @@ function ControlledOpenSpeedDial() {
 
   function handleClickPen() {
     if (isLoggedIn) {
-      // Proceed to post page
       router.push('/post');
     } else {
-      // Show an alert or redirect to the login page
-      alert('You must be logged in to post');
+      store.dispatch(showSnackbar({message: 'Please login to post', severity: 'info'}));
     }
   }
 

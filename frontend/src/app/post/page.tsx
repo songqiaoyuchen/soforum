@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import PostForm from '@components/PostForm';
-import { RootState } from '@store';
+import store, { RootState } from '@store';
+import { showSnackbar } from '@store/snackbarSlice';
 
 function PostPage() {
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn); // Adjust state type as needed
@@ -12,8 +13,8 @@ function PostPage() {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      // Redirect to homepage if user is not logged in
       router.push('/');
+      store.dispatch(showSnackbar({message: 'Please login to post', severity: 'info'}));
     }
   }, [isLoggedIn, router]);
 

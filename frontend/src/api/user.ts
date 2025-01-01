@@ -6,7 +6,6 @@ export async function userLogin(formData: { username: string; password: string }
   try {
     const response = await axios.post('http://localhost:8080/login', formData);
     if (response.status === 200) {
-      console.log(response);
       sessionStorage.setItem('jwt', response.data.token);
       return { success: true, message: "Login Successful!"};
     } else {

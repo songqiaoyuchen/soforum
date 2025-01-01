@@ -8,6 +8,7 @@ import Sidenav from '@components/Sidenav';
 import ProfileMenu from '@components/ProfileMenu';
 import LoginDialog from '@components/LoginDialog';
 import PopupActions from '@components/PopupActions';
+import Alertbar from '@components/Alertbar';
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -44,6 +45,7 @@ export default function RootLayout({
             <PopupActions />
             <ProfileMenu />
             <LoginDialog />
+            <Alertbar />
           </Box>
         </AppProviders>
       </body>
