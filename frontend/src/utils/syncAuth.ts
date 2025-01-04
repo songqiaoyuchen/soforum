@@ -1,48 +1,36 @@
-// src/utils/auth.ts
-import { jwtDecode } from 'jwt-decode';
 import store from '@store';
-import { setAuthState, clearAuthState } from '@store/authSlice';
+import { clearAuthState, setAuthState } from '@store/slices/authSlice';
+import { getDecodedToken } from './decodeJwt';
 
-export function initializeAuth() {
-  const token = sessionStorage.getItem('jwt');
-  if (!token) {
-    store.dispatch(clearAuthState());
-    return;
-  }
-
-  try {
-    const decoded: { exp: number; sub: string } = jwtDecode(token);
-    const currentTime = Date.now() / 1000; // Current time in seconds
-    console.log('Decoded token:', decoded);
-
-    if (decoded.exp > currentTime) {
-      // Token is valid, update Redux
-      store.dispatch(setAuthState({ isLoggedIn: true, username: decoded.sub }));
-      scheduleTokenValidation(decoded.exp);
-    } else {
-      // Token expired
-      sessionStorage.removeItem('jwt');
-      store.dispatch(clearAuthState());
-    }
-  } catch (error) {
-    console.error('Token validation failed:', error);
-    sessionStorage.removeItem('jwt');
-    store.dispatch(clearAuthState());
-  }
-}
-
-export function scheduleTokenValidation(expirationTime: number): void {
+// scheduleLogout schedules jwt removal and updates authSatte upon expiry
+export function scheduleLogout(expiryTime: number): void {
+  // expiryTime is expected to be in seconds
   const currentTime = Date.now() / 1000; // In seconds
-  const delay = (expirationTime - currentTime) * 1000;
+  const delay = (expiryTime - currentTime) * 1000;
   console.log('Scheduling token validation with delay:', delay);
 
   if (delay > 0) {
     setTimeout(() => {
       sessionStorage.removeItem('jwt');
       store.dispatch(clearAuthState());
-      console.log('Token expired');
+      console.log('Token expired, jwt removed from storage -- scheduleLogout');
     }, delay);
   } else {
-    console.log('Token expiration time is invalid or in the past:', expirationTime);
+    console.error('Token expiration time is invalid or in the past:', expiryTime);
+  }
+}
+
+// syncAuth syncs authState with jwt in sessionStorage
+export default function syncAuth() {
+  const decodedToken = getDecodedToken();
+
+  if (decodedToken) {
+    const username = decodedToken.sub;
+    const expiryTime = decodedToken.exp;
+    store.dispatch(setAuthState({ isLoggedIn: true, username }));
+    console.log("Auth state synced with jwt -- syncAuth");
+    scheduleLogout(expiryTime)
+  } else {
+    store.dispatch(clearAuthState());
   }
 }

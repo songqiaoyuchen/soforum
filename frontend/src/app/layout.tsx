@@ -1,52 +1,44 @@
-'use client';
-
-import "@styles/style.css";
-
+import "@styles/global.css";
+import { Metadata } from 'next';
 import { Box } from '@mui/material';
 import Topbar from '@components/Topbar';
 import Sidenav from '@components/Sidenav';
-import ProfileMenu from '@components/ProfileMenu';
-import LoginDialog from '@components/LoginDialog';
 import PopupActions from '@components/PopupActions';
-import Alertbar from '@components/Alertbar';
-
-import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
-import { initializeAuth } from '@utils/syncAuth';
 import AppProviders from '@providers/AppProviders';
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
+// Dynamically import components that aren't needed for initial render
+const LoginDialog = dynamic(() => import('@components/LoginDialog'));
+const ProfileMenu = dynamic(() => import('@components/ProfileMenu'));
+const Alertbar = dynamic(() => import('@components/Alertbar'));
+
+export const metadata: Metadata = {
+  title: 'Soforum',
+  description: 'CVWO Forum'
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    initializeAuth();
-  }, []);
-
-  if (pathname.startsWith('/signup')) {
-    return <>{children}</>;
-  }
-
   return (
     <html lang="en">
       <head />
       <body>
         <AppProviders>
-          <Box>
-            <Topbar />
-            <Box sx={{ display: 'flex' }}>
-              <Sidenav />
-              <Box sx={{ flexGrow: 1 }}>{children}</Box>
-            </Box>
-            <PopupActions />
-            <ProfileMenu />
-            <LoginDialog />
-            <Alertbar />
+          <Topbar />
+          <Box sx={{ display: 'flex' }}>
+            <Sidenav />
+            <Box sx={{ flexGrow: 1 }}>{children}</Box>
           </Box>
+          <PopupActions />
+          <Suspense>
+            <LoginDialog />
+            <ProfileMenu />
+            <Alertbar />
+          </Suspense>
         </AppProviders>
       </body>
     </html>

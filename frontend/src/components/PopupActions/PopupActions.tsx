@@ -9,7 +9,7 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import CreateIcon from '@mui/icons-material/Create';
-import { showSnackbar } from '@store/snackbarSlice';
+import { showSnackbar } from '@store/slices/snackbarSlice';
 
 function ControlledOpenSpeedDial() {
   const router = useRouter();

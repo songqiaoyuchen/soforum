@@ -24,11 +24,10 @@ function ThreadCard(props: {thread: Thread}) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        maxHeight: '250px',
         color: 'primary',
         bgcolor: 'rgba(6, 20, 0, 0.7)',
         '&:hover': {
-          backgroundColor: 'rgba(3, 20, 1, 0.9)',
+          backgroundColor: 'rgb(221, 255, 233, 0.3)',
         },
         boxShadow: 3,
       }}
@@ -58,7 +57,7 @@ function ThreadCard(props: {thread: Thread}) {
           align="left"
           sx={{
             display: '-webkit-box',             
-            WebkitLineClamp: 3,                 
+            WebkitLineClamp: {md: 3, xl: 6},                 
             WebkitBoxOrient: 'vertical',         
             overflow: 'hidden',               
             textOverflow: 'ellipsis',

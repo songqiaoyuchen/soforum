@@ -30,7 +30,7 @@ export function validPost(title: string, content: string, category: string)  {
   // 1. be at least 1 character long
   // 2. be less than 1000 characters
   // Category must not be empty
-  let formErrors = { title: '', content: '', category: '' };
+  const formErrors = { title: '', content: '', category: '' };
   let isValid = true;
 
   if (title.trim() === '') {

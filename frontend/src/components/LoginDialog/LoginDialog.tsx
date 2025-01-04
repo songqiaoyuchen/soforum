@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 
 // Redux
 import { useSelector } from 'react-redux';
-import { setAuthState } from '@store/authSlice';
 import store, { RootState } from '@store';
-import { closeDialog } from '@store/dialogSlice';
+import { closeDialog } from '@store/slices/dialogSlice';
 
 import Image from 'next/image';
 const frogLook = '/images/frog-look.webp';
@@ -17,8 +16,8 @@ import { Box, Button, TextField, Link, Dialog,
 // Utils
 import { validPassword, validUsername } from '@utils/validInputs';
 import { userLogin } from '@api/user';
-import { initializeAuth } from '@utils/syncAuth';
-import { showSnackbar } from '@store/snackbarSlice';
+import syncAuth from '@utils/syncAuth';
+import { showSnackbar } from '@store/slices/snackbarSlice';
 
 function CustomDialog() { 
   const isOpen = useSelector((state: RootState) => state.dialog.isOpen);
@@ -80,10 +79,9 @@ function CustomDialog() {
     try {
       const result = await userLogin({username: username, password: password});
       if (result.success) {
-        store.dispatch(setAuthState({isLoggedIn: true, username: username}));
+        syncAuth()
         store.dispatch(closeDialog());
         store.dispatch(showSnackbar({message: 'Login successful', severity: 'success'}));
-        initializeAuth();
       } else {
         store.dispatch(showSnackbar({message: 'Login failed: ' + result.message, severity: 'error'}));
         setAuthError("Login failed: " + result.message); 

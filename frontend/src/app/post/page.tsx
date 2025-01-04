@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import PostForm from '@components/PostForm';
 import store, { RootState } from '@store';
-import { showSnackbar } from '@store/snackbarSlice';
+import { showSnackbar } from '@store/slices/snackbarSlice';
 
 function PostPage() {
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn); // Adjust state type as needed

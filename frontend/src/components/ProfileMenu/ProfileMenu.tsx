@@ -1,3 +1,5 @@
+'use client';
+
 import Divider from '@mui/material/Divider';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,8 +14,8 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import store, { RootState } from '@store';
-import { closeMenu } from '@store/menuSlice';
-import { clearAuthState } from '@store/authSlice';
+import { closeMenu } from '@store/slices/menuSlice';
+import { clearAuthState } from '@store/slices/authSlice';
 
 
 function ProfilePopup() {

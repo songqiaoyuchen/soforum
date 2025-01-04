@@ -1,7 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { setSearchQuery } from '@store/filterSlice';
-import store, { RootState } from '@store'; 
+import { setSearchQuery } from '@store/slices/filterSlice';
+import store from '@store'; 
 import { SearchBox, StyledInputBase, SearchIconWrapper } from './Search.styles';
 import SearchIcon from '@mui/icons-material/Search';
 

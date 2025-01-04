@@ -10,20 +10,20 @@ export const themeOptions: ThemeOptions = {
   palette: {
     mode: 'dark',
     primary: {
-      main: '#4fa852',
-      light: '#2d5c2e',
-      dark: '#3bde44',
-      contrastText: 'rgba(255,255,255,0.87)',
+      main: 'rgba(44, 133, 66, 0.87)',
+      light: 'rgba(84, 179, 112, 0.87)',
+      dark: 'rgba(16, 73, 33, 0.87)',
+      contrastText: 'rgba(255,255,255,1)',
     },
     secondary: {
       main: '#c93156',
     },
     text: {
-      primary: '#c6eac1',
+      primary: 'rgb(221, 255, 233)',
     },
     background: {
-      default: '#031401',
-      paper: '#031401',
+      default: 'rgb(1, 22, 8)',
+      paper: 'rgb(2, 31, 11)',
     },
   },
 };

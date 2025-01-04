@@ -1,3 +1,5 @@
+'use client';
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,8 +10,8 @@ import Search from '@components/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store';
-import { openDialog } from '@store/dialogSlice';
-import { openMenu } from '@store/menuSlice';
+import { openDialog } from '@store/slices/dialogSlice';
+import { openMenu } from '@store/slices/menuSlice';
 
 function Topbar() {
   const dispatch = useDispatch(); 

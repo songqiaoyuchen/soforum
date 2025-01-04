@@ -1,7 +1,9 @@
+'use client';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { Snackbar, Alert } from '@mui/material';
 import { RootState } from '@store'; 
-import { hideSnackbar } from '@store/snackbarSlice';
+import { hideSnackbar } from '@store/slices/snackbarSlice';
 
 function Alertbar() {
   const dispatch = useDispatch();

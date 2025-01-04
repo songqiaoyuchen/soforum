@@ -1,3 +1,5 @@
+'use client';
+
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { SvgIconComponent } from '@mui/icons-material';
 import { usePathname, useRouter } from "next/navigation";
