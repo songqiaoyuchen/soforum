@@ -1,61 +1,100 @@
 # Soforum: Personal Web Forum Project
 
-This project is done for the CVWO 2025 Holiday Assignment, but mainly aimed for self-learning of foundational web development skills.
+This project is developed as part of the CVWO 2025 Holiday Assignment, with a primary focus on self-learning foundational web development skills.
 
 ## Project Plan
 
-### Structure
+#### Frontend:
+- **Language**: TypeScript
+- **Libraries**: React, Material UI
+- **Framework**: Next.js
+- **State Management**: Redux
 
-- **Frontend**: React library with Typescript\
-  **Backend**: Go with Gin (TBD) framework
-
-- **State Management**: Redux \
-  **UI Component Library**: Material UI \
-  **Database**: PostgreSQL \
-  **Authentication**: OAuth or JWT (TBD) \
-  **Deployment**: AWS (TBD)
+#### Backend:
+- **Language**: Go (Golang)
+- **Framework**: Gin
+- **Database**: PostgreSQL
 
 ### Features
 
-- Basic CRUD operations: **Create**, **Read**, **Update** and **Destroy** forum threads
-- **Upvote**, **Downvote**, **Save** and **Comment** operations for forum threads
-- Basic **Authentication** system based on username and password
-- Basic **Sort** and **Search** operations based on relevancy, popularity and time with a **Category** system
-- User customisation of the web forum's appearance with minimally light/dark **Themes** 
-- *Authentication based on external accounts: e.g. Login with Github (TBC)*
-- *User profile page and social functions such as follow and personal message (TBC)*
-- *Annonymous browsing mode (TBC)*
-- *Optimise loading time of web forum (TBU)*
-- *Optional content filtering powered by AI (TBU)*
+#### User Registration and Authentication
+- A "/signup" page for new users with validation for form inputs (to be changed to a dialog popup).
+- Login dialog popup with error handling for incorrect credentials.
+- Authentication using JSON Web Tokens (JWT), stored in `sessionStorage`.
+- Persistent user state using Redux and `sessionStorage`.
+- Automatic logout when the JWT token expires to ensure secure access.
+- *Refresh tokens with short-lived access tokens to enhance security (TBC)*.
+
+#### Thread Management
+- A homepage to view threads with pagination for efficient loading.
+- A "/post" page to post threads for logged-in users.
+- Search functionality via a top navigation bar to find threads by keywords.
+- *"/[category]" pages to display category-specific threads (TBC)*.
+- *"/thread/[id]" pages to display individual threads (TBC)*.
+- *Editing and deletion capabilities restricted to the thread's author (TBC)*.
+- *Sorting of threads by relevancy, popularity, and time (TBC)*.
+- *Tag system to attach user-designed tags to threads (TBC)*.
+- *Interactions like upvoting, commenting, saving, and reposting for logged-in users (TBC)*.
+
+#### UI/UX Design
+- Responsive layout for devices of all screen sizes.
+- Loading placeholders and animations to improve user experience.
+- Side navigation bar for navigating "/[category]" pages.
+- Global alert system using MUI Snackbar managed by Redux.
+- *"/user/[username]" page to display user info and allow user settings customization, such as theme (TBC)*.
+
+### Next Steps
+- Enable optional content filtering powered by AI.
+- Enable anonymous browsing mode.
+- Enable third-party login with Google and GitHub using OAuth.
+- Optimize loading time and deploy the application.
 
 ## Prerequisites
 
-- PosgreSQL, Node.js and Go (Golang) installed
-- Setup your .env file under */backend* with following environment variables according to your pgAdmin settings
-  - JWT_SECRET_KEY: any
-  - DB_NAME: database name
-  - DB_USER: database username
-  - DB_PASSWORD: database password
+1. **Install Required Software:**
+   - PostgreSQL
+   - Node.js
+   - Go (Golang)
+2. **Setup Environment Variables:**
+   - Create a `.env` file under `/backend` with the following keys based on your PostgreSQL configuration:
 
-## Setting up the web application
+    ```env
+    JWT_SECRET_KEY=YourSecretKey
+    DB_NAME=DatabaseName
+    DB_USER=DatabaseUsername
+    DB_PASSWORD=DatabasePassword
+    ```
 
-### `$ cd frontend/`
+## Setting up the Web Application
 
-Navigates to the frontend directory.
+### Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   $ cd frontend/
+   ```
+2. Install necessary dependencies:
+   ```bash
+   $ npm install
+   ```
+3. Start the development server:
+   ```bash
+   $ npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in the browser to view the app.
 
-### `$ npm install`
+### Backend Setup
+1. Navigate to the backend directory where `main.go` is located:
+   ```bash
+   $ cd backend/cmd/
+   ```
+2. Start the backend server:
+   ```bash
+   $ go run main.go
+   ```
+   The server will run on [http://localhost:8080](http://localhost:8080).
 
-Install necessary dependencies.
+---
 
-### `$ npm run dev`
+This document outlines the execution plan and project setup for the forum application, ensuring a structured approach to achieving core functionality and scalability.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### `$ cd backend/cmd/` 
-
-Navigates to the directory where `main.go` is located
-
-### `$ air`
-
-Runs the backend server on [http://localhost:8080](http://localhost:8080).

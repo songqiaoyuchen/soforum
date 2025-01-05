@@ -11,37 +11,42 @@ import (
 
 // PostThread handles the HTTP request to post a thread
 func PostThread(c *gin.Context, db *sql.DB) {
-	var newThread models.Thread
-
-	// Bind JSON
-	if err := c.ShouldBindJSON(&newThread); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid thread data"})
+	// Bind the request body to a Thread struct
+	var thread models.Thread
+	if err := c.ShouldBindJSON(&thread); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	// Retrieve the username from the context (set by JWTMiddleware)
-	username, exists := c.Get("username")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
-	}
-
-	// Look up the user ID based on the username
-	user, err := models.GetUserIDByUsername(username.(string), db)
+	// Add thread to table
+	threadID, err := models.CreateThread(db, &thread)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		c.Error(err).SetMeta("Thread creation failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create thread"})
 		return
 	}
 
-	// Insert the new thread into the database
-	err = models.InsertThread(db, user.ID, newThread.Title, newThread.Content, newThread.Category)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to insert thread", "message": err.Error()})
+	// Associate thread with tags
+	var tagIDs []int
+	for _, tag := range thread.Tags {
+		tagID, err := models.GetOrCreateTagID(db, tag)
+		if err != nil {
+			c.Error(err).SetMeta("Tag creation failed")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create tags"})
+			return
+		}
+		tagIDs = append(tagIDs, tagID)
+	}
+	if err := models.AssociateThreadTags(db, threadID, tagIDs); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to associate thread with tags"})
 		return
 	}
 
-	// Respond with a success message
-	c.JSON(http.StatusCreated, gin.H{"message": "Thread posted successfully"})
+	// Respond with the thread ID
+	c.JSON(http.StatusCreated, gin.H{
+		"message":   "Thread created successfully",
+		"thread_id": threadID,
+	})
 }
 
 // GetThreads handles the HTTP request to retrieve threads.
@@ -55,6 +60,7 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	limitStr := c.DefaultQuery("limit", "10") // Default to 10 if not provided
 	category := c.DefaultQuery("category", "")
 	search := c.DefaultQuery("search", "")
+	tag := c.DefaultQuery("tag", "")
 
 	// Convert page and limit to integers
 	page, err := strconv.Atoi(pageStr)
@@ -70,7 +76,7 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	}
 
 	// Call the model to get threads from the database
-	threads, err := models.GetThreads(db, page, limit, category, search)
+	threads, err := models.GetThreads(db, page, limit, category, search, tag)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve threads: " + err.Error()})
 		return
@@ -78,4 +84,85 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 
 	// Return the threads as a JSON response
 	c.JSON(http.StatusOK, threads)
+}
+
+// EditThread handles the HTTP request to edit thread
+func EditThread(c *gin.Context, db *sql.DB) {
+	// Parse thread ID from URL
+	threadID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid thread ID"})
+		return
+	}
+
+	// Get the username from the context
+	username, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Parse the thread data from the request body
+	var updatedThread models.Thread
+	if err := c.ShouldBindJSON(&updatedThread); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	// Check if the thread belongs to the user
+	threadOwner, err := models.GetThreadOwnerUsername(db, threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching thread owner"})
+		return
+	}
+	if threadOwner != username {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to edit this thread"})
+		return
+	}
+
+	// Update the thread
+	err = models.UpdateThread(db, threadID, &updatedThread)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Thread updated successfully"})
+}
+
+// DeleteThread handles the HTTP request to delete thread
+func DeleteThread(c *gin.Context, db *sql.DB) {
+	// Parse thread ID from URL
+	threadID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid thread ID"})
+		return
+	}
+
+	// Get the username from the context (set by JWTAuthMiddleware)
+	username, exists := c.Get("username")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Check if the thread belongs to the user
+	threadOwner, err := models.GetThreadOwnerUsername(db, threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching thread owner"})
+		return
+	}
+	if threadOwner != username {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to delete this thread"})
+		return
+	}
+
+	// Delete the thread
+	err = models.DeleteThread(db, threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete thread"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Thread deleted successfully"})
 }

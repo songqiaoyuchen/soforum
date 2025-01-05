@@ -24,13 +24,13 @@ func UserSignup(c *gin.Context, db *sql.DB) {
 	passwordError := utils.ValidatePassword(newUser.Password)
 	emailError := utils.ValidateEmail(newUser.Email)
 	if usernameError != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": usernameError})
+		c.JSON(http.StatusBadRequest, gin.H{"error": usernameError.Error()})
 		return
 	} else if passwordError != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": passwordError})
+		c.JSON(http.StatusBadRequest, gin.H{"error": passwordError.Error()})
 		return
 	} else if emailError != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": emailError})
+		c.JSON(http.StatusBadRequest, gin.H{"error": emailError.Error()})
 		return
 	}
 
@@ -73,28 +73,25 @@ func UserLogin(c *gin.Context, db *sql.DB) {
 	usernameError := utils.ValidateUsername(loginData.Username)
 	passwordError := utils.ValidatePassword(loginData.Password)
 	if usernameError != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": usernameError})
+		c.JSON(http.StatusBadRequest, gin.H{"error": usernameError.Error()})
 		return
 	} else if passwordError != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": passwordError})
+		c.JSON(http.StatusBadRequest, gin.H{"error": passwordError.Error()})
 		return
 	}
 
-	// User authentication
-	// Check if the user exists
-	user, err := models.GetUserIDByUsername(loginData.Username, db)
+	// User authentication (!! hash password with bcrpt !!)
+	Password, err := models.GetUserPasswordByUsername(loginData.Username, db)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "username does not exist"})
 			return
 		}
+		c.Error(err).SetMeta("Authentication failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-
-	// Compare the password (!! hash password with bcrpt !!)
-	user, _ = models.GetUserPasswordByUsername(loginData.Username, db)
-	if user.Password != loginData.Password {
+	if Password != loginData.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}

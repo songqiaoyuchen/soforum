@@ -21,38 +21,38 @@ func CreateUser(db *sql.DB, username, password, email string) error {
 	return nil
 }
 
-func GetUserIDByUsername(username string, db *sql.DB) (User, error) {
+func GetUserIDByUsername(username string, db *sql.DB) (int, error) {
 	var user User
 	err := db.QueryRow("SELECT id FROM users WHERE username = $1", username).Scan(&user.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, fmt.Errorf("user not found")
+			return 0, fmt.Errorf("user not found")
 		}
-		return user, fmt.Errorf("error querying database: %v", err)
+		return 0, fmt.Errorf("error querying database: %v", err)
 	}
-	return user, nil
+	return user.ID, nil
 }
 
-func GetUserIDByEmail(email string, db *sql.DB) (User, error) {
+func GetUserIDByEmail(email string, db *sql.DB) (int, error) {
 	var user User
 	err := db.QueryRow("SELECT id FROM users WHERE email = $1", email).Scan(&user.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, fmt.Errorf("user not found")
+			return 0, fmt.Errorf("user not found")
 		}
-		return user, fmt.Errorf("error querying database: %v", err)
+		return 0, fmt.Errorf("error querying database: %v", err)
 	}
-	return user, nil
+	return user.ID, nil
 }
 
-func GetUserPasswordByUsername(username string, db *sql.DB) (User, error) {
+func GetUserPasswordByUsername(username string, db *sql.DB) (string, error) {
 	var user User
 	err := db.QueryRow("SELECT password FROM users WHERE username = $1", username).Scan(&user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, fmt.Errorf("user not found")
+			return "", fmt.Errorf("user not found")
 		}
-		return user, fmt.Errorf("error querying database: %v", err)
+		return "", fmt.Errorf("error querying database: %v", err)
 	}
-	return user, nil
+	return user.Password, nil
 }
