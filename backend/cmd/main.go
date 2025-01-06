@@ -30,17 +30,17 @@ func main() {
 		threadGroup.POST("/post", func(c *gin.Context) {
 			controllers.PostThread(c, config.DB)
 		})
-		threadGroup.PUT("/:id", func(c *gin.Context) {
+		threadGroup.PUT("/:thread_id", func(c *gin.Context) {
 			controllers.EditThread(c, config.DB)
 		})
-		threadGroup.DELETE("/:id", func(c *gin.Context) {
+		threadGroup.DELETE("/:thread_id", func(c *gin.Context) {
 			controllers.DeleteThread(c, config.DB)
 		})
 	}
-	commentGroup := router.Group("/threads/:id/comments")
+	commentGroup := router.Group("/threads/:thread_id/comments")
 	commentGroup.Use(middlewares.JWTAuthMiddleware())
 	{
-		commentGroup.POST("/", func(c *gin.Context) {
+		commentGroup.POST("", func(c *gin.Context) {
 			controllers.AddComment(c, config.DB)
 		})
 		commentGroup.PUT("/:comment_id", func(c *gin.Context) {
@@ -59,7 +59,7 @@ func main() {
 	router.GET("/threads", func(c *gin.Context) {
 		controllers.GetThreads(c, config.DB)
 	})
-	router.GET("/threads/:id/comments", func(c *gin.Context) {
+	router.GET("/threads/:thread_id/comments", func(c *gin.Context) {
 		controllers.GetComments(c, config.DB)
 	})
 

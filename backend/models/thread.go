@@ -18,31 +18,30 @@ type Thread struct {
 	CreatedAt string   `json:"created_at"`
 }
 
-func CreateThread(db *sql.DB, thread *Thread) (int, error) {
+func CreateThread(db *sql.DB, thread *Thread) (*Thread, error) {
 	query := `
 		INSERT INTO threads (user_id, title, content, category_id)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id;
+		RETURNING id, created_at;
 	`
 
 	userID, err := GetUserIDByUsername(thread.Username, db)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	var categoryID int
 	categoryID, err = GetCategoryIDByName(thread.Category, db)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	var threadID int
-	err = db.QueryRow(query, userID, thread.Title, thread.Content, categoryID).Scan(&threadID)
+	err = db.QueryRow(query, userID, thread.Title, thread.Content, categoryID).Scan(&thread.ID, &thread.CreatedAt)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return threadID, nil
+	return thread, nil
 }
 
 func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Thread, error) {
@@ -164,15 +163,12 @@ func GetThreadOwnerUsername(db *sql.DB, threadID int) (string, error) {
 	`
 	err := db.QueryRow(query, threadID).Scan(&username)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return "", fmt.Errorf("thread not found")
-		}
 		return "", err
 	}
 	return username, nil
 }
 
-func UpdateThread(db *sql.DB, threadID int, thread *Thread) error {
+func EditThread(db *sql.DB, threadID int, thread *Thread) error {
 	// Store query parts and parameters
 	var setClauses []string
 	var params []interface{}

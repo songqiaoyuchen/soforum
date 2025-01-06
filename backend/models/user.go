@@ -25,10 +25,7 @@ func GetUserIDByUsername(username string, db *sql.DB) (int, error) {
 	var user User
 	err := db.QueryRow("SELECT id FROM users WHERE username = $1", username).Scan(&user.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("user not found")
-		}
-		return 0, fmt.Errorf("error querying database: %v", err)
+		return 0, err
 	}
 	return user.ID, nil
 }

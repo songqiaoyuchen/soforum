@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"backend/utils"
 	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -83,7 +84,7 @@ func UserLogin(c *gin.Context, db *sql.DB) {
 	// User authentication (!! hash password with bcrpt !!)
 	Password, err := models.GetUserPasswordByUsername(loginData.Username, db)
 	if err != nil {
-		if err.Error() == "user not found" {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "username does not exist"})
 			return
 		}

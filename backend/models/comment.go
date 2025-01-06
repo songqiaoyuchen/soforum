@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// Comment struct defines the comment model
 type Comment struct {
 	ID        int       `json:"id"`
 	ThreadID  int       `json:"thread_id"`
@@ -15,7 +14,7 @@ type Comment struct {
 }
 
 // CreateComment inserts a new comment into the database
-func CreateComment(db *sql.DB, comment *Comment) error {
+func CreateComment(db *sql.DB, comment *Comment) (*Comment, error) {
 	query := `
 		INSERT INTO comments (thread_id, user_id, content)
 		VALUES ($1, $2, $3)
@@ -23,11 +22,15 @@ func CreateComment(db *sql.DB, comment *Comment) error {
 	`
 	userID, err := GetUserIDByUsername(comment.Username, db)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = db.QueryRow(query, comment.ThreadID, userID, comment.Content).Scan(&comment.ID, &comment.CreatedAt)
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	return comment, nil
 }
 
 // GetCommentsByThreadID retrieves all comments for a given thread
@@ -59,32 +62,40 @@ func GetCommentsByThreadID(db *sql.DB, threadID int) ([]Comment, error) {
 }
 
 // EditComment updates the content of an existing comment
-func EditComment(db *sql.DB, commentID int, username string, newContent string) error {
+func EditComment(db *sql.DB, commentID int, newContent string) error {
 	query := `
 		UPDATE comments
 		SET content = $1
-		WHERE id = $2 AND user_id = $3
+		WHERE id = $2
 	`
-	userID, err := GetUserIDByUsername(username, db)
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Exec(query, newContent, commentID, userID)
+	_, err := db.Exec(query, newContent, commentID)
 	return err
 }
 
 // DeleteComment deletes a comment by its ID and ensures the user is the owner
-func DeleteComment(db *sql.DB, commentID int, username string) error {
+func DeleteComment(db *sql.DB, commentID int) error {
 	query := `
 		DELETE FROM comments
-		WHERE id = $1 AND user_id = $2
+		WHERE id = $1
 	`
-	userID, err := GetUserIDByUsername(username, db)
+
+	_, err := db.Exec(query, commentID)
+	return err
+}
+
+func GetCommentOwnerUsername(db *sql.DB, commentID int) (string, error) {
+	query := `
+		SELECT u.username
+		FROM users u
+		INNER JOIN comments c ON u.id = c.user_id
+		WHERE c.id = $1
+	`
+
+	var username string
+	err := db.QueryRow(query, commentID).Scan(&username)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	_, err = db.Exec(query, commentID, userID)
-	return err
+	return username, nil
 }
