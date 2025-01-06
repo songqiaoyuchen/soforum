@@ -30,6 +30,7 @@ function Topbar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ 
         zIndex: (theme) => theme.zIndex.drawer + 1,
+        backgroundColor: 'rgb(7, 46, 10)',
         paddingRight: '0px !important' // To prevent layout change...TBC
       }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'stretch'}}>

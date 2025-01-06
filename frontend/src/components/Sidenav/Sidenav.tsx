@@ -10,6 +10,8 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 
+const categories = ['general', 'art', 'music', 'academics'];
+
 function Sidenav() {
   return (
     <StyledDrawer
@@ -28,8 +30,8 @@ function Sidenav() {
         <List>
           {/* !!NEED TO WRAP HERE LATER!! */}
           <ListItemText primary='CATEGORIES' slotProps={{primary: {fontSize: '16px'}}} sx={{padding: '0px 24px'}}/> 
-          {['Tag1', 'Tag2', 'Tag312312', 'tag13234', 'tag5123', 'tag3126', 'tag7123123', 'tag812312', 'tag123129', 'tag10'].map((text) => (
-            <ListItem key={text} text={text} icon={TagOutlinedIcon} href="/trending"/>
+          {categories.map((category) => (
+            <ListItem key={category} text={category} icon={TagOutlinedIcon} href={`/${category}`}/>
           ))}
         </List>
       </StyledBox>

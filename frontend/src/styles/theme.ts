@@ -10,8 +10,8 @@ export const themeOptions: ThemeOptions = {
   palette: {
     mode: 'dark',
     primary: {
-      main: 'rgba(44, 133, 66, 0.87)',
-      light: 'rgba(84, 179, 112, 0.87)',
+      main: 'rgba(53, 177, 84, 0.87)',
+      light: 'rgba(113, 216, 144, 0.87)',
       dark: 'rgba(16, 73, 33, 0.87)',
       contrastText: 'rgba(255,255,255,1)',
     },
@@ -23,7 +23,7 @@ export const themeOptions: ThemeOptions = {
     },
     background: {
       default: 'rgb(1, 22, 8)',
-      paper: 'rgb(2, 31, 11)',
+      paper: 'rgb(0, 19, 5)',
     },
   },
 };

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useState, useEffect, useRef } from 'react';
 import { Box, Button, Stack, CircularProgress, Typography } from '@mui/material';
@@ -7,6 +7,9 @@ import { Thread } from '@/types/thread';
 import ThreadCard from '@components/ThreadCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@store';
+import { useParams } from 'next/navigation';
+
+export const dynamicParams = true;
 
 export default function HomePage() {
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -15,6 +18,10 @@ export default function HomePage() {
   const [hasMore, setHasMore] = useState(true);
   const fetchedOnce = useRef(false); // Avoid React Strict Mode Re-render, no effects on production
   const { searchQuery, category } = useSelector((state: RootState) => state.filters);
+
+  // Get category from URL params
+  const params = useParams();
+  const categoryFromUrl = params.category as string;
 
   async function loadThreads(pageNumber: number, reset: boolean = false) {
     setLoading(true);
@@ -25,7 +32,7 @@ export default function HomePage() {
     }
 
     try {
-      const newThreads = await fetchThreads(pageNumber, 10, category, searchQuery);
+      const newThreads = await fetchThreads(pageNumber, 10, categoryFromUrl, searchQuery);
       setThreads((prevThreads) => [...prevThreads, ...newThreads]);
       setHasMore(newThreads.length >= 10);
     } catch (error) {
@@ -113,4 +120,3 @@ export default function HomePage() {
     </Box>
   );
 }
-

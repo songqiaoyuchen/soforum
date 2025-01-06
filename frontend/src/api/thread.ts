@@ -2,10 +2,16 @@ import axios from 'axios';
 import { Thread, PostData } from '@/types/thread';
 
 // Function to fetch threads from the database
-export async function fetchThreads(pageNumber: number, limit: number = 10, category: string, search: string)
+export async function fetchThreads(
+  pageNumber: number, 
+  limit: number = 10, 
+  category?: string, 
+  search?: string,
+)
   : Promise<Thread[]> 
 {
   try {
+    await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay to test loading UI
     const response = await axios.get(`http://localhost:8080/threads`, {
       params: {
         page: pageNumber,
@@ -16,7 +22,7 @@ export async function fetchThreads(pageNumber: number, limit: number = 10, categ
     });
     
     // Return the slice of threads
-    return response.data;
+    return Array.isArray(response.data?.threads) ? response.data.threads : [];
   } catch (error) {
     console.error('Error fetching threads:', error);
     return []
