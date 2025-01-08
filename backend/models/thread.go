@@ -53,8 +53,8 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 	query := `
 	SELECT t.id, u.username, t.title, t.content, c.name AS category, t.created_at
 	FROM threads t
-	JOIN users u ON t.user_id = u.id
-	JOIN categories c ON t.category_id = c.id
+	INNER JOIN users u ON t.user_id = u.id
+	INNER JOIN categories c ON t.category_id = c.id
 	`
 
 	// Dynamic WHERE clause
@@ -118,7 +118,7 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 		tagQuery := `
 		SELECT tt.thread_id, tg.name 
 		FROM thread_tags tt
-		JOIN tags tg ON tt.tag_id = tg.id
+		INNER JOIN tags tg ON tt.tag_id = tg.id
 		WHERE tt.thread_id = ANY($1)
 		`
 
@@ -153,12 +153,63 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 	return threads, nil
 }
 
+func GetThreadByID(db *sql.DB, threadID int) (*Thread, error) {
+	query := `
+		SELECT t.id, t.title, t.content, t.created_at, u.username, c.name as category
+		FROM threads t
+		INNER JOIN users u ON t.user_id = u.id
+		INNER JOIN categories c ON t.category_id = c.id
+		WHERE t.id = $1;
+	`
+
+	var thread Thread
+	err := db.QueryRow(query, threadID).Scan(
+		&thread.ID,
+		&thread.Title,
+		&thread.Content,
+		&thread.CreatedAt,
+		&thread.Username,
+		&thread.Category,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch tags for the thread
+	tagQuery := `
+		SELECT tg.name
+		FROM thread_tags tt
+		INNER JOIN tags tg ON tt.tag_id = tg.id
+		WHERE tt.thread_id = $1;
+	`
+	rows, err := db.Query(tagQuery, threadID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch tags: %w", err)
+	}
+	defer rows.Close()
+
+	thread.Tags = []string{}
+	for rows.Next() {
+		var tagName string
+		if err := rows.Scan(&tagName); err != nil {
+			return nil, fmt.Errorf("failed to scan tag name: %w", err)
+		}
+		thread.Tags = append(thread.Tags, tagName)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to process tag rows: %w", err)
+	}
+
+	return &thread, nil
+}
+
 func GetThreadOwnerUsername(db *sql.DB, threadID int) (string, error) {
 	var username string
 	query := `
 		SELECT u.username
 		FROM threads t
-		JOIN users u ON t.user_id = u.id
+		INNER JOIN users u ON t.user_id = u.id
 		WHERE t.id = $1
 	`
 	err := db.QueryRow(query, threadID).Scan(&username)

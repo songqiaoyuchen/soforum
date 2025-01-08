@@ -17,7 +17,7 @@ function PostForm() {
   const [errors, setErrors] = useState({ title: '', content: '', category: '' });
   const [serverMsg, setServerMsg] = useState('');
 
-  const categories = ['General', 'Tech', 'Art', 'Music', 'Gaming'];
+  const categories = ['general', 'art', 'music', 'academics'];
 
   function resetFields() {
     setTitle('');

@@ -9,7 +9,7 @@ import (
 func SetupCORS() gin.HandlerFunc {
 	// Define allowed origins
 	allowedOrigins := []string{
-		"*",
+		"http://localhost:3000",
 	}
 
 	corsConfig := cors.Config{

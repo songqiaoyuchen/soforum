@@ -16,7 +16,7 @@ function ThreadCard(props: {thread: Thread}) {
   const relativeTime = formatDistanceToNowStrict(parsedDate, { addSuffix: true });
   
   return (
-    <Box onClick={() => router.push("/")}
+    <Box onClick={() => router.push(`/threads/${props.thread.id}`)}
       sx={{
         borderTop: 2,
         borderRadius: 1,

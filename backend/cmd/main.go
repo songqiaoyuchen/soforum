@@ -59,6 +59,9 @@ func main() {
 	router.GET("/threads", func(c *gin.Context) {
 		controllers.GetThreads(c, config.DB)
 	})
+	router.GET("/threads/:thread_id", func(c *gin.Context) {
+		controllers.GetSingleThread(c, config.DB)
+	})
 	router.GET("/threads/:thread_id/comments", func(c *gin.Context) {
 		controllers.GetComments(c, config.DB)
 	})

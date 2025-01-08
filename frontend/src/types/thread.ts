@@ -3,7 +3,8 @@ export interface Thread {
   username: string;
   title: string;
   content: string;
-  category: string
+  category: string;
+  tags: string[];
   created_at: string
 }
 

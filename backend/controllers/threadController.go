@@ -89,6 +89,24 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, gin.H{"threads": threads})
 }
 
+// GetSingleThread handles requests to fetch a single thread based on ID
+func GetSingleThread(c *gin.Context, db *sql.DB) {
+	// Parse thread ID from URL
+	threadID, err := strconv.Atoi(c.Param("thread_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid thread ID"})
+		return
+	}
+
+	thread, err := models.GetThreadByID(db, threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch thread"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"thread": thread})
+}
+
 // EditThread handles requests to edit thread
 func EditThread(c *gin.Context, db *sql.DB) {
 	// Parse thread ID from URL

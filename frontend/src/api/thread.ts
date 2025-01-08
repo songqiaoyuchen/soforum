@@ -29,6 +29,20 @@ export async function fetchThreads(
   }
 }
 
+// Function to fetch a single thread from the database
+export async function fetchSingleThread(threadID: number): Promise<Thread | null> {
+  try {
+    await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay to test loading UI
+    const response = await axios.get(`http://localhost:8080/threads/${threadID}`);
+    
+    return response.data ? response.data.thread : null;
+  } catch (error) {
+    console.error('Error fetching single thread:', error);
+    return null;
+  }
+}
+
+
 export async function postThread(postData: PostData)
   : Promise<{success: boolean, message: string}> 
 {

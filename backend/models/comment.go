@@ -38,7 +38,7 @@ func GetCommentsByThreadID(db *sql.DB, threadID int) ([]Comment, error) {
 	query := `
 		SELECT c.id, c.thread_id, u.username, c.content, c.created_at
 		FROM comments c
-		JOIN users u ON c.user_id = u.id
+		INNER JOIN users u ON c.user_id = u.id
 		WHERE c.thread_id = $1
 		ORDER BY c.created_at ASC
 	`

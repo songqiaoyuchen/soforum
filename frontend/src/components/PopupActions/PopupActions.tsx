@@ -26,7 +26,7 @@ function ControlledOpenSpeedDial() {
 
   function handleClickPen() {
     if (isLoggedIn) {
-      router.push('/post');
+      router.push('/threads/post');
     } else {
       store.dispatch(showSnackbar({message: 'Please login to post', severity: 'info'}));
     }
