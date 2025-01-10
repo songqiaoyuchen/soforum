@@ -13,3 +13,10 @@ export interface PostData {
   content: string;
   category: string
 }
+
+export interface ThreadComment {
+  id: number;
+  username: string;
+  content: string;
+  created_at: string;
+}

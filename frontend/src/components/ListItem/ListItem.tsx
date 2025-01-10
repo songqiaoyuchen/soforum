@@ -26,6 +26,7 @@ function CustomListItem(props: CustomListItemProps) {
           borderRadius: '8px',
           backgroundColor: isSelected ? '#183d22' : 'transparent',
           color: isSelected ? 'primary.contrastText' : 'text.primary',
+          margin: '3px'
         }}>
         <ListItemIcon>
           <props.icon />

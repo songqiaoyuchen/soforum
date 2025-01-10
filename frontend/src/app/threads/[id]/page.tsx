@@ -2,9 +2,10 @@ import { Thread } from "@/types/thread";
 import { Box, Typography, Chip } from "@mui/material";
 import { formatDistanceToNowStrict } from "date-fns";
 import { fetchSingleThread } from "@/api/thread";
+import Comments from "@components/Comments";
 
 export default async function ThreadPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
   let thread: Thread | null;
 
   try {
@@ -45,16 +46,38 @@ export default async function ThreadPage({ params }: { params: { id: string } })
 
   return (
     <Box
-      sx={{
-        margin: "70px auto",
-        padding: "20px",
-        maxWidth: "800px",
-        bgcolor: "rgba(18, 46, 5, 0.7)",
-        color: "primary",
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
+    component="main"
+    sx={{
+      flexGrow: 1,
+      bgcolor: 'background.default',
+      padding: 3,
+      display: 'flex',
+      minHeight: '100vh',
+      flexDirection: 'column',
+      alignItems: { xs: 'center', md: 'flex-start' },
+      backgroundImage: `url('/images/bg.webp')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
+      overflowY: 'auto',
+    }}
+  >
+    <Box sx={{ 
+      width: '100%',
+      maxWidth: {md: '600px', xl: '900px'},
+      marginTop: 7, 
+      marginBottom: 2,
+      borderTop: 2,
+      borderRadius: 1,
+      padding: "10px 20px",
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      color: 'primary',
+      bgcolor: 'rgba(6, 20, 0, 0.7)',
+      boxShadow: 3,
+    }}>
       {/* Title */}
       <Typography variant="h4" sx={{ color: "white", marginBottom: "10px" }}>
         {thread.title}
@@ -62,11 +85,11 @@ export default async function ThreadPage({ params }: { params: { id: string } })
 
       {/* Category and Author */}
       <Typography
-        variant="subtitle2"
-        sx={{ color: "#c6eac1", marginBottom: "10px" }}
-      >
-        # {thread.category} • {relativeTime} by {thread.username}
-      </Typography>
+          variant="subtitle2"
+          sx={{display: 'flex', gap: '20px', paddingBottom: '10px'}}>
+          <Box># {thread.category}</Box>
+          <Box>• {relativeTime} by {thread.username}</Box>
+        </Typography>
 
       {/* Content */}
       <Typography
@@ -112,6 +135,8 @@ export default async function ThreadPage({ params }: { params: { id: string } })
       >
         Interactions TBU
       </Box>
+      <Comments threadID={Number(id)}/>
+    </Box>
     </Box>
   );
 }

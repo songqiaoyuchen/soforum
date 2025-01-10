@@ -101,10 +101,13 @@ export default function HomePage() {
           </Box>
         )}
 
-        {/* No More Threads Indicator STYLES TBU*/}
+        {/* No More Threads Indicator */}
         {!hasMore && !loading && (
-          <Box sx={{ textAlign: 'center', py: 4, px: 2, bgcolor: 'background.paper', borderRadius: 1, boxShadow: 1 }}>
-          <Typography color="text.secondary">
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 4, 
+            px: 2 }}>
+          <Typography color='primary.contrastText'>
             No more threads available...
           </Typography>
         </Box>

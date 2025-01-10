@@ -3,7 +3,6 @@
 // Essentials
 import axios from 'axios';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 // Utils Functions
 import { validPassword, validEmail, validUsername } from '@utils/validInputs';
@@ -21,7 +20,7 @@ import Typography from '@mui/material/Typography';
 import { Card, SignUpContainer} from './styles';
 
 // Static Assets
-import { GoogleIcon } from '../../../public/icons/customIcons';
+import { GoogleIcon } from '../../../../public/icons/customIcons';
 
 interface SignupData {
   username: string;

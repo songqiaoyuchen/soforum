@@ -78,11 +78,15 @@ export default function HomePage() {
         overflowY: 'auto',
       }}
     >
+          <Box sx={{backgroundColor: 'rgba(255, 255, 255, 0.3)', 
+      marginTop: 7, 
+      marginBottom: 2,
+      height: '150px', 
+      width: '100%'}}>CATEGORY BANNER</Box>
       <Box sx={{ 
         width: '100%',
         maxWidth: {md: '600px', xl: '900px'},
         marginBottom: 2,
-        marginTop: 7,
       }}>
         {/* Content Section */}
         <Box sx={{ padding: '0px 0px 16px 4px' }}>SORTING SECTION</Box>
@@ -108,10 +112,13 @@ export default function HomePage() {
           </Box>
         )}
 
-        {/* No More Threads Indicator STYLES TBU*/}
+        {/* No More Threads Indicator */}
         {!hasMore && !loading && (
-          <Box sx={{ textAlign: 'center', py: 4, px: 2, bgcolor: 'background.paper', borderRadius: 1, boxShadow: 1 }}>
-          <Typography color="text.secondary">
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 4, 
+            px: 2 }}>
+          <Typography color='primary.contrastText'>
             No more threads available...
           </Typography>
         </Box>
