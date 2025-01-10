@@ -1,7 +1,5 @@
 # Soforum: Personal Web Forum Project
 
-This project is developed as part of the CVWO 2025 Holiday Assignment, with a primary focus on self-learning foundational web development skills.
-
 ## Project Plan
 
 #### Frontend:
@@ -29,12 +27,12 @@ This project is developed as part of the CVWO 2025 Holiday Assignment, with a pr
 - A homepage to view threads with pagination for efficient loading.
 - A "/post" page to post threads for logged-in users.
 - Search functionality via a top navigation bar to find threads by keywords.
-- *"/[category]" pages to display category-specific threads (TBC)*.
-- *"/thread/[id]" pages to display individual threads (TBC)*.
+- "/[category]" pages to display category-specific threads (TBC)*.
+- "/thread/[id]" pages to display individual threads.
 - *Editing and deletion capabilities restricted to the thread's author (TBC)*.
 - *Sorting of threads by relevancy, popularity, and time (TBC)*.
 - *Tag system to attach user-designed tags to threads (TBC)*.
-- *Interactions like upvoting, commenting, saving, and reposting for logged-in users (TBC)*.
+- *Interactions such as upvoting, commenting, saving, and reposting for logged-in users (TBC)*.
 
 #### UI/UX Design
 - Responsive layout for devices of all screen sizes.
@@ -94,7 +92,3 @@ This project is developed as part of the CVWO 2025 Holiday Assignment, with a pr
    The server will run on [http://localhost:8080](http://localhost:8080).
 
 ---
-
-This document outlines the execution plan and project setup for the forum application, ensuring a structured approach to achieving core functionality and scalability.
-
-
