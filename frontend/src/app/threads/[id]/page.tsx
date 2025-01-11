@@ -3,6 +3,7 @@ import { Box, Typography, Chip } from "@mui/material";
 import { formatDistanceToNowStrict } from "date-fns";
 import { fetchSingleThread } from "@/api/thread";
 import Comments from "@components/Comments";
+import ThreadActions from "@components/ThreadActions";
 
 export default async function ThreadPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -78,10 +79,13 @@ export default async function ThreadPage({ params }: { params: { id: string } })
       bgcolor: 'rgba(6, 20, 0, 0.7)',
       boxShadow: 3,
     }}>
+      <Box sx={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
       {/* Title */}
       <Typography variant="h4" sx={{ color: "white", marginBottom: "10px" }}>
         {thread.title}
       </Typography>
+      <ThreadActions id={Number(id)} />
+      </Box>
 
       {/* Category and Author */}
       <Typography
