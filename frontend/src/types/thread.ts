@@ -11,7 +11,8 @@ export interface Thread {
 export interface PostData {
   title: string;
   content: string;
-  category: string
+  category: string;
+  tags: string[]
 }
 
 export interface ThreadComment {

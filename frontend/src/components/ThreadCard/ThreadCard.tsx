@@ -1,5 +1,5 @@
 import { Thread } from "@/types/thread";
-import { Box, Typography } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNowStrict } from 'date-fns';
 
@@ -64,6 +64,28 @@ function ThreadCard(props: {thread: Thread}) {
           }}>
           {props.thread.content}
         </Typography>
+        {/* Tags */}
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px",
+          marginBottom: "20px",
+        }}
+      >
+        {props.thread.tags.map((tag) => (
+          <Chip
+            key={tag}
+            label={`#${tag}`}
+            sx={{
+              color: "white",
+              bgcolor: "rgba(255, 255, 255, 0.2)",
+              borderRadius: '5px',
+              "&:hover": { bgcolor: "rgba(255, 255, 255, 0.4)" },
+            }}
+          />
+        ))}
+      </Box>
         {/* Interaction Bar */}
         <Box sx={{height: '30px', padding: '5px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
           Interactions TBU

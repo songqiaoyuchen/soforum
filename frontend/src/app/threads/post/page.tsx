@@ -1,28 +1,33 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import PostForm from '@components/PostForm';
 import store, { RootState } from '@store';
 import { showSnackbar } from '@store/slices/snackbarSlice';
+import syncAuth from '@utils/syncAuth';
 
 function PostPage() {
-  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn); // Adjust state type as needed
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const router = useRouter();
+  const [authSynced, setAuthSynced] = useState(false); // Track when `syncAuth` finishes
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    syncAuth();
+    setAuthSynced(true);
+  }, []);
+
+  useEffect(() => {
+    if (authSynced && !isLoggedIn) {
       router.push('/');
-      store.dispatch(showSnackbar({message: 'Please login to post', severity: 'info'}));
+      store.dispatch(showSnackbar({ message: 'Please login to post', severity: 'info' }));
     }
-  }, [isLoggedIn, router]);
+  }, [authSynced, isLoggedIn, router]);
 
-  // Render nothing if not logged in to avoid flickering
-  if (!isLoggedIn) return null;
+  if (!authSynced || !isLoggedIn) return null;
 
-  return <PostForm />;
+  return <PostForm initialThread={null}/>;
 }
 
 export default PostPage;
-

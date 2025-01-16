@@ -123,6 +123,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
             sx={{
               color: "white",
               bgcolor: "rgba(255, 255, 255, 0.2)",
+              borderRadius: '5px',
               "&:hover": { bgcolor: "rgba(255, 255, 255, 0.4)" },
             }}
           />

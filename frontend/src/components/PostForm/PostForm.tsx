@@ -2,27 +2,39 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Button, TextField, MenuItem, Select, 
-  FormControl, InputLabel, FormHelperText, } from '@mui/material';
+import {
+  Box,
+  Button,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+  Autocomplete,
+  Chip,
+} from '@mui/material';
 
 import { validPost } from '@utils/validInputs';
-import { postThread } from '@api/thread';
+import { editThread, postThread } from '@api/thread';
+import { Thread } from '@/types/thread';
 
-// Component for the post form
-function PostForm() {
+function PostForm(props: {initialThread: Thread | null}) {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
+  const [title, setTitle] = useState(props.initialThread?.title ?? '');
+  const [content, setContent] = useState(props.initialThread?.content ?? '');
+  const [category, setCategory] = useState(props.initialThread?.category ?? '');
+  const [tags, setTags] = useState<string[]>(props.initialThread?.tags ?? []);
   const [errors, setErrors] = useState({ title: '', content: '', category: '' });
   const [serverMsg, setServerMsg] = useState('');
 
   const categories = ['general', 'art', 'music', 'academics'];
 
   function resetFields() {
-    setTitle('');
-    setContent('');
-    setCategory('');
+    setTitle(props.initialThread?.title || '');
+    setContent(props.initialThread?.content || '');
+    setCategory(props.initialThread?.category || '');
+    setTags(props.initialThread?.tags || []);
     setErrors({ title: '', content: '', category: '' });
   }
 
@@ -37,24 +49,34 @@ function PostForm() {
     }
 
     const postData = {
-      "title": title,
-      "content": content,
-      "category": category,
+      title,
+      content,
+      category,
+      tags,
     };
 
     try {
-      const response = await postThread(postData);
-      setServerMsg(response.message)
+      let response: {
+        success: boolean;
+        message: string;
+      };
+      if (props.initialThread) {
+        response = await editThread(props.initialThread.id, postData);
+      } else {
+        response = await postThread(postData);
+      }
+      setServerMsg(response.message);
+      resetFields();
     } catch (error) {
-      console.error("Unexpected error: ", error);
-      setServerMsg("Sorry, an unexpected error has occured.")
+      console.error('Unexpected error:', error);
+      setServerMsg('Sorry, an unexpected error has occurred.');
     }
-  };
+  }
 
   function handleCancel() {
     resetFields();
-    router.push("/")
-  };
+    router.push('/');
+  }
 
   return (
     <Box
@@ -65,22 +87,19 @@ function PostForm() {
         bgcolor: 'background.default',
         padding: 3,
         display: 'flex',
-        overflowY: 'auto', 
-        marginBottom: 2, 
-        marginTop: 6
+        overflowY: 'auto',
+        marginBottom: 2,
+        marginTop: 6,
       }}
     >
-      {/* Form Box */}
-      <Box 
-        sx={{ 
-          maxWidth: 600, 
+      <Box
+        sx={{
+          maxWidth: 600,
           width: '100%',
-          padding: 2, 
-          borderRadius: 1, 
-          alignSelf: {xxs: 'center', md: 'flex-start'},
+          padding: 2,
+          borderRadius: 1,
         }}
       >
-        {/* Title field */}
         <TextField
           label="Title"
           fullWidth
@@ -92,7 +111,6 @@ function PostForm() {
           helperText={errors.title}
         />
 
-        {/* Content field */}
         <TextField
           label="Content"
           fullWidth
@@ -106,39 +124,65 @@ function PostForm() {
           helperText={errors.content}
         />
 
-        {/* Category field */}
         <FormControl fullWidth margin="normal" error={!!errors.category}>
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             label="Category"
-            defaultValue=""
           >
-            {categories.map((category, index) => (
-              <MenuItem key={index} value={category}>
-                {category}
+            {categories.map((cat) => (
+              <MenuItem key={cat} value={cat}>
+                {cat}
               </MenuItem>
             ))}
           </Select>
           {errors.category && <FormHelperText>{errors.category}</FormHelperText>}
         </FormControl>
-            
-        {/* Submit and cancel buttons */}
+
+        <Autocomplete
+          multiple
+          freeSolo
+          options={[]}
+          value={tags}
+          onChange={(event, newValue) => setTags(newValue)}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => {
+              const { key, ...tagProps } = getTagProps({ index });
+              return (
+                <Chip
+                  key={option}
+                  label={`#${option}`}
+                  {...tagProps}
+                  sx={{
+                    color: "white",
+                    bgcolor: "rgba(255, 255, 255, 0.2)",
+                    borderRadius: '5px',
+                    "&:hover": { bgcolor: "rgba(255, 255, 255, 0.4)" },
+                  }}
+                />
+              );
+            })
+          }
+          renderInput={(params) => (
+            <TextField {...params} variant="outlined" label="Tags" />
+          )}
+          sx={{margin: '10px 0px'}}
+        />
+
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: 2 }}>
           <Button variant="outlined" color="secondary" onClick={handleCancel}>
-            cancel
-          </Button>           
+            Cancel
+          </Button>
           <Button variant="contained" color="primary" type="submit">
             Post
           </Button>
         </Box>
-        
-        {/* Server message */}
-        {serverMsg && <Box color='primary'>{serverMsg}</Box>}
+
+        {serverMsg && <Box color="primary">{serverMsg}</Box>}
       </Box>
     </Box>
   );
-};
+}
 
 export default PostForm;

@@ -41,6 +41,19 @@ func CreateThread(db *sql.DB, thread *Thread) (*Thread, error) {
 		return nil, err
 	}
 
+	// Insert tags into the thread_tags table
+	for _, tag := range thread.Tags {
+		tagID, err := GetOrCreateTagID(db, tag)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = db.Exec("INSERT INTO thread_tags (thread_id, tag_id) VALUES ($1, $2)", thread.ID, tagID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return thread, nil
 }
 
@@ -99,8 +112,9 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 		if err := rows.Scan(&thread.ID, &thread.Username, &thread.Title, &thread.Content, &thread.Category, &thread.CreatedAt); err != nil {
 			return nil, err
 		}
-		thread.Tags = []string{} // Initialize tags as an empty slice
-		threadMap[thread.ID] = &thread
+		thread.Tags = []string{}
+		threads = append(threads, thread)
+		threadMap[thread.ID] = &threads[len(threads)-1]
 	}
 
 	// Check for iteration errors
@@ -143,11 +157,6 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 		if err := tagRows.Err(); err != nil {
 			return nil, err
 		}
-	}
-
-	// Convert threadMap to a slice
-	for _, thread := range threadMap {
-		threads = append(threads, *thread)
 	}
 
 	return threads, nil

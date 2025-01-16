@@ -1,3 +1,4 @@
+'use client'
 import store from '@store';
 import { clearAuthState, setAuthState } from '@store/slices/authSlice';
 import { getDecodedToken } from './decodeJwt';
@@ -22,6 +23,11 @@ export function scheduleLogout(expiryTime: number): void {
 
 // syncAuth syncs authState with jwt in sessionStorage
 export default function syncAuth() {
+  if (typeof window === 'undefined') {
+    console.warn('syncAuth should only run in the browser.');
+    return;
+  }
+
   const decodedToken = getDecodedToken();
 
   if (decodedToken) {
