@@ -2,7 +2,7 @@ import { Toolbar, List, ListItemText, Divider} from '@mui/material';
 
 import { StyledBox, StyledDrawer } from './Sidenav.styles'
 
-import ListItem from '@components/ListItem';
+import ListItem from '@components/Sidenav/ListItem';
 
 import HomeIcon from '@mui/icons-material/Home';
 import ScheduleIcon from '@mui/icons-material/Schedule';

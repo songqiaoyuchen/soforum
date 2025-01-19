@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Thread, ThreadComment, PostData } from '@/types/thread';
+import { Thread, PostData } from '@/types/thread';
 
 // Function to fetch threads from the database
 export async function fetchThreads(
@@ -41,7 +41,6 @@ export async function fetchSingleThread(threadID: number): Promise<Thread | null
     return null;
   }
 }
-
 
 export async function postThread(postData: PostData)
   : Promise<{success: boolean, message: string}> 
@@ -88,18 +87,6 @@ export async function postThread(postData: PostData)
   } 
 
   return output
-}
-
-export async function fetchComments(threadID: number): Promise<ThreadComment[]> {
-  try {
-    await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay to test loading UI
-    const response = await axios.get(`http://localhost:8080/threads/${threadID}/comments`);
-    
-    return response.data ? response.data.comments : [];
-  } catch (error) {
-    console.error('Error fetching single thread:', error);
-    return [];
-  }
 }
 
 export async function deleteThread(threadID: number)

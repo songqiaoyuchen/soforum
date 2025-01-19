@@ -8,8 +8,8 @@ const initialState: DialogState = {
   isOpen: false,
 };
 
-const dialogSlice = createSlice({
-  name: 'dialog',
+const loginDialogSlice = createSlice({
+  name: 'loginDialog',
   initialState,
   reducers: {
     openDialog: (state) => {
@@ -21,5 +21,5 @@ const dialogSlice = createSlice({
   },
 });
 
-export const { openDialog, closeDialog } = dialogSlice.actions;
-export default dialogSlice.reducer;
+export const { openDialog, closeDialog } = loginDialogSlice.actions;
+export default loginDialogSlice.reducer;

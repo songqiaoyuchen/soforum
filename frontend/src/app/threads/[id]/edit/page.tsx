@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import PostForm from '@components/PostForm';
 import store, { RootState } from '@store';
@@ -11,8 +11,9 @@ import { fetchSingleThread } from '@api/thread';
 import { Box, Typography } from '@mui/material';
 import { Thread } from '@/types/thread';
 
-async function EditPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+function EditPage() {
+  const params = useParams();
+  const id = params.id; 
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const username = useSelector((state: RootState) => state.auth.username);
   const router = useRouter();

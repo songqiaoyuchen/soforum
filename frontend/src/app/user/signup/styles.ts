@@ -31,6 +31,6 @@ export const SignUpContainer = styled(Stack)(({ theme }) => ({
   backgroundSize: 'cover',
   backgroundAttachment: 'fixed',
   ...theme.applyStyles('dark', {
-    backgroundImage: 'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+    backgroundImage: 'radial-gradient(at 50% 50%, hsla(152, 100.00%, 16.10%, 0.50), hsl(220, 30%, 5%))',
   }),
 }));

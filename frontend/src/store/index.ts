@@ -1,17 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-import dialogReducer from './slices/dialogSlice';
+import loginDialogReducer from './slices/loginDialogSlice';
 import menuReducer from './slices/menuSlice';
 import snackbarReducer from './slices/snackbarSlice';
 import filterReducer from './slices/filterSlice';
+import commentDialogReducer from './slices/commentDialogSlice';
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    dialog: dialogReducer,
+    loginDialog: loginDialogReducer,
     menu: menuReducer,
     snackbar: snackbarReducer,
-    filters: filterReducer
+    filters: filterReducer,
+    commentDialog: commentDialogReducer,
   }
 });
 

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from "react";
-import { Box, Typography, Divider } from "@mui/material";
-import { fetchComments } from "@/api/thread"; // Assuming this API function exists
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { fetchComments } from "@/api/comment"; // Assuming this API function exists
 import { ThreadComment } from "@/types/thread"; // Assuming a `Comment` type is defined
 
 export default function Comments({ threadID }: { threadID: number }) {
@@ -13,7 +13,7 @@ export default function Comments({ threadID }: { threadID: number }) {
     async function loadComments() {
       try {
         const response = await fetchComments(threadID);
-        response ? setComments(response) : setError("No comments under this thread.");
+        if (response) {setComments(response)};
       } catch (err) {
         console.error("Error fetching comments:", err);
         setError("Failed to load comments.");
@@ -25,10 +25,6 @@ export default function Comments({ threadID }: { threadID: number }) {
     loadComments();
   }, [threadID]);
 
-  if (loading) {
-    return <Typography>Loading comments...</Typography>;
-  }
-
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
@@ -38,6 +34,12 @@ export default function Comments({ threadID }: { threadID: number }) {
       <Typography variant="h6" sx={{ marginBottom: "10px" }}>
         Comments ({comments.length})
       </Typography>
+        {/* Loading Indicator */}
+        {loading && (
+          <Box sx={{ textAlign: 'center', marginTop: 3 }}>
+            <CircularProgress />
+          </Box>
+        )}
       {comments.map((comment) => (
         <Box
           key={comment.id}

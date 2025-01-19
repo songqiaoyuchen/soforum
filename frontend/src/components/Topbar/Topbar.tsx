@@ -6,12 +6,12 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
-import Search from '@components/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import Search from '@components/Topbar/Search';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store';
-import { openDialog } from '@store/slices/dialogSlice';
+import { openDialog } from '@store/slices/loginDialogSlice';
 import { openMenu } from '@store/slices/menuSlice';
+import { Chip } from '@mui/material';
 
 function Topbar() {
   const dispatch = useDispatch(); 
@@ -55,25 +55,22 @@ function Topbar() {
           >
             FORUM
           </Typography>
-          <Typography>
-            {/* !!! styling needed !!! */}
-            {isLoggedIn ? "welcome " + username : "please login"} 
-          </Typography>
           {/* Spacing Box */}
           <Box sx={{ flexGrow: 1 }} /> 
           {/* Search Field */}
           <Search />
           {/* Profile Icon */}    
-          <IconButton
-            size="large"
-            edge="end"
-            aria-label="account of current user"
-            aria-haspopup="true"
+          <Chip
+            // avatar={<Avatar alt="user" src="?" sx={{height: 40}}/>}
+            label={username || "LOGIN"}
+            variant="filled"
             onClick={onProfileClick}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
+            sx={{
+              height: 40, width: 90,
+              backgroundColor: 'primary.main',
+              borderRadius: '25px'
+            }}
+          />
         </Toolbar>
 
       </AppBar>

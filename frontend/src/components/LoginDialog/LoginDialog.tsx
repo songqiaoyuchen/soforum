@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // Redux
 import { useSelector } from 'react-redux';
 import store, { RootState } from '@store';
-import { closeDialog } from '@store/slices/dialogSlice';
+import { closeDialog } from '@store/slices/loginDialogSlice';
 
 import Image from 'next/image';
 const frogLook = '/images/frog-look.webp';
@@ -20,7 +20,7 @@ import syncAuth from '@utils/syncAuth';
 import { showSnackbar } from '@store/slices/snackbarSlice';
 
 function CustomDialog() { 
-  const isOpen = useSelector((state: RootState) => state.dialog.isOpen);
+  const isOpen = useSelector((state: RootState) => state.loginDialog.isOpen);
 
   // Toggle to frogClose if password is being typed
   const [typingPassword, setTypingPassword] = useState(false);
@@ -115,7 +115,7 @@ function CustomDialog() {
         display: 'flex',
         flexDirection: {xxs: 'column', xs: 'row'},
         justifyContent: 'center',
-        backgroundColor: '#2b2b2b',
+        backgroundColor: 'background.paper',
       }}>
         {/* Frog Image Left */}
         <Box sx={{
@@ -187,7 +187,7 @@ function CustomDialog() {
           <Typography sx={{ textAlign: 'center', padding: '10px', fontSize: 14 }}>
             No account yet?{' '}
             <Link
-              href="/signup"
+              href="/user/signup"
               variant="body2"
               sx={{ alignSelf: 'center' }}
             >

@@ -7,6 +7,8 @@ import PopupActions from '@components/PopupActions';
 import AppProviders from '@providers/AppProviders';
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
+import NavigationListener from "@components/NavListener";
+import CommentDialog from "@components/CommentDialog";
 
 // Dynamically import components that aren't needed for initial render
 const LoginDialog = dynamic(() => import('@components/LoginDialog'));
@@ -28,6 +30,7 @@ export default function RootLayout({
       <head />
       <body>
         <AppProviders>
+          <NavigationListener />
           <Topbar />
           <Box sx={{ display: 'flex' }}>
             <Sidenav />

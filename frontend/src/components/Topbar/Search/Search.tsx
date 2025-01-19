@@ -13,6 +13,7 @@ const Search: React.FC = () => {
     if (event.key === 'Enter') {
       // Dispatch the search query when the "Enter" key is pressed
       store.dispatch(setSearchQuery(inputValue));
+      setInputValue('');
     }
   };
 

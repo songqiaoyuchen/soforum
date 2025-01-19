@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Thread } from "@/types/thread";
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, Chip, Typography, CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNowStrict } from 'date-fns';
+import InteractionsBar from "@components/InteractionBar";
 
-
-function ThreadCard(props: {thread: Thread}) {
+function ThreadCard(props: { thread: Thread }) {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-   // Helper to parse SQL timestamp into a valid ISO string
+
+  // Helper to parse SQL timestamp into a valid ISO string
   const parseSQLTimestamp = (timestamp: string) => {
     const isoString = timestamp.replace(' ', 'T').split('.')[0]; // Replace space with 'T' and trim after seconds
     return new Date(isoString);
@@ -14,10 +17,17 @@ function ThreadCard(props: {thread: Thread}) {
 
   const parsedDate = parseSQLTimestamp(props.thread.created_at);
   const relativeTime = formatDistanceToNowStrict(parsedDate, { addSuffix: true });
-  
+
+  const handleClick = () => {
+    setLoading(true);
+    router.push(`/threads/${props.thread.id}`);
+  };
+
   return (
-    <Box onClick={() => router.push(`/threads/${props.thread.id}`)}
+    <Box
+      onClick={handleClick}
       sx={{
+        position: 'relative',
         borderTop: 2,
         borderRadius: 1,
         padding: "10px 20px",
@@ -30,8 +40,27 @@ function ThreadCard(props: {thread: Thread}) {
           backgroundColor: 'rgb(221, 255, 233, 0.3)',
         },
         boxShadow: 3,
+        cursor: 'pointer',
       }}
     >
+      {loading && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            bgcolor: 'rgba(255, 255, 255, 0.7)',
+            zIndex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
       <Box sx={{
         color: '#c6eac1',
         display: 'flex',
@@ -41,7 +70,7 @@ function ThreadCard(props: {thread: Thread}) {
         {/* Category... */}
         <Typography
           variant="subtitle2"
-          sx={{display: 'flex', gap: '20px'}}>
+          sx={{ display: 'flex', gap: '20px' }}>
           <Box># {props.thread.category}</Box>
           <Box>• {relativeTime} by {props.thread.username}</Box>
         </Typography>
@@ -56,21 +85,21 @@ function ThreadCard(props: {thread: Thread}) {
           variant='body2'
           align="left"
           sx={{
-            display: '-webkit-box',             
-            WebkitLineClamp: {md: 3, xl: 6},                 
-            WebkitBoxOrient: 'vertical',         
-            overflow: 'hidden',               
+            display: '-webkit-box',
+            WebkitLineClamp: { md: 3, xl: 6 },
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
             textOverflow: 'ellipsis',
           }}>
           {props.thread.content}
         </Typography>
         {/* Tags */}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "10px",
-          marginBottom: "20px",
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            margin: "10px 0px",
         }}
       >
         {props.thread.tags.map((tag) => (
@@ -79,20 +108,18 @@ function ThreadCard(props: {thread: Thread}) {
             label={`#${tag}`}
             sx={{
               color: "white",
-              bgcolor: "rgba(255, 255, 255, 0.2)",
+              bgcolor: "primary.main",
               borderRadius: '5px',
-              "&:hover": { bgcolor: "rgba(255, 255, 255, 0.4)" },
+              "&:hover": { bgcolor: "primary.light" },
             }}
           />
         ))}
       </Box>
         {/* Interaction Bar */}
-        <Box sx={{height: '30px', padding: '5px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
-          Interactions TBU
-        </Box>
+        <InteractionsBar threadId={props.thread.id} initialVotes={0}/>
       </Box>
     </Box>
   );
 }
 
-export default ThreadCard
+export default ThreadCard;

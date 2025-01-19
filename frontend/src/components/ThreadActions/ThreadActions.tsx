@@ -28,6 +28,7 @@ export default function LongMenu(props: { id: number }) {
       const response = await deleteThread(id);
       if (response.success) {
         store.dispatch(showSnackbar({ message: 'Thread deleted', severity: 'success' }));
+        router.push("/")
       } else {
         store.dispatch(showSnackbar({ message: 'Deletion failed: ' + response.message, severity: 'error' }));
       }

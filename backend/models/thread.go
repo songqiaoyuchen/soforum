@@ -96,16 +96,15 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 	query += fmt.Sprintf("ORDER BY t.created_at DESC LIMIT $%d OFFSET $%d", len(params)+1, len(params)+2)
 	params = append(params, limit, offset)
 
-	// Execute the query
+	// Query threads
 	rows, err := db.Query(query, params...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	// Map rows to Thread slice
 	var threads []Thread
-	threadMap := make(map[int]*Thread)
+	threadIndexMap := make(map[int]int) // Map thread ID to index in slice
 
 	for rows.Next() {
 		var thread Thread
@@ -113,29 +112,27 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 			return nil, err
 		}
 		thread.Tags = []string{}
+		threadIndexMap[thread.ID] = len(threads)
 		threads = append(threads, thread)
-		threadMap[thread.ID] = &threads[len(threads)-1]
 	}
 
-	// Check for iteration errors
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	// Fetch tags for threads
-	threadIDs := make([]int, 0, len(threadMap))
-	for id := range threadMap {
-		threadIDs = append(threadIDs, id)
-	}
+	// Fetch tags
+	if len(threads) > 0 {
+		threadIDs := make([]int, 0, len(threadIndexMap))
+		for id := range threadIndexMap {
+			threadIDs = append(threadIDs, id)
+		}
 
-	if len(threadIDs) > 0 {
 		tagQuery := `
-		SELECT tt.thread_id, tg.name 
-		FROM thread_tags tt
-		INNER JOIN tags tg ON tt.tag_id = tg.id
-		WHERE tt.thread_id = ANY($1)
-		`
-
+			SELECT tt.thread_id, tg.name
+			FROM thread_tags tt
+			INNER JOIN tags tg ON tt.tag_id = tg.id
+			WHERE tt.thread_id = ANY($1)
+			`
 		tagRows, err := db.Query(tagQuery, pq.Array(threadIDs))
 		if err != nil {
 			return nil, err
@@ -148,12 +145,11 @@ func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Th
 			if err := tagRows.Scan(&threadID, &tagName); err != nil {
 				return nil, err
 			}
-			if thread, exists := threadMap[threadID]; exists {
-				thread.Tags = append(thread.Tags, tagName)
+			if idx, exists := threadIndexMap[threadID]; exists {
+				threads[idx].Tags = append(threads[idx].Tags, tagName)
 			}
 		}
 
-		// Check for tag query errors
 		if err := tagRows.Err(); err != nil {
 			return nil, err
 		}

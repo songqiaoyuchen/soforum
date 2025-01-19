@@ -23,7 +23,7 @@ export const themeOptions: ThemeOptions = {
     },
     background: {
       default: 'rgb(1, 22, 8)',
-      paper: 'rgb(0, 19, 5)',
+      paper: 'rgb(12, 29, 16)',
     },
   },
 };

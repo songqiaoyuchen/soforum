@@ -21,3 +21,7 @@ export interface ThreadComment {
   content: string;
   created_at: string;
 }
+
+export interface CommentData {
+  content: string;
+} 

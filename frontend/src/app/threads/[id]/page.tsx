@@ -4,6 +4,8 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { fetchSingleThread } from "@/api/thread";
 import Comments from "@components/Comments";
 import ThreadActions from "@components/ThreadActions";
+import InteractionsBar from "@components/InteractionBar";
+import CommentDialog from "@components/CommentDialog";
 
 export default async function ThreadPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -122,26 +124,20 @@ export default async function ThreadPage({ params }: { params: { id: string } })
             label={`#${tag}`}
             sx={{
               color: "white",
-              bgcolor: "rgba(255, 255, 255, 0.2)",
+              bgcolor: "primary.main",
               borderRadius: '5px',
-              "&:hover": { bgcolor: "rgba(255, 255, 255, 0.4)" },
+              "&:hover": { bgcolor: "primary.light" },
             }}
           />
         ))}
       </Box>
 
-      {/* Interaction Bar (Placeholder for future interaction features) */}
-      <Box
-        sx={{
-          height: "30px",
-          padding: "5px",
-          backgroundColor: "rgba(255, 255, 255, 0.5)",
-        }}
-      >
-        Interactions TBU
-      </Box>
+      {/* Interaction Bar*/}
+      <InteractionsBar initialVotes={0} threadId={Number(id)}/>
       <Comments threadID={Number(id)}/>
     </Box>
+    <CommentDialog threadID={Number(id)} />
+
     </Box>
   );
 }

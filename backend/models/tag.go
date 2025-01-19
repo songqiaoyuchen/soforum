@@ -8,23 +8,24 @@ import (
 // CreateTag inserts a new tag into the database or retrieves its ID if it already exists.
 func GetOrCreateTagID(db *sql.DB, tagName string) (int, error) {
 	var tagID int
-	query := `
-		INSERT INTO tags (name)
-		VALUES ($1)
-		ON CONFLICT (name) DO NOTHING
-		RETURNING id;
-	`
+
+	query := `SELECT id FROM tags WHERE name = $1`
 	err := db.QueryRow(query, tagName).Scan(&tagID)
-	if err != nil && err != sql.ErrNoRows {
-		return 0, fmt.Errorf("failed to add or get tag: %v", err)
+	if err == nil {
+		return tagID, nil // Tag found, return the existing ID
+	} else if err != sql.ErrNoRows {
+		return 0, fmt.Errorf("failed to retrieve existing tag: %v", err)
 	}
 
-	if tagID == 0 { // Fetch existing tag ID if it already exists
-		query = `SELECT id FROM tags WHERE name = $1`
-		err = db.QueryRow(query, tagName).Scan(&tagID)
-		if err != nil {
-			return 0, fmt.Errorf("failed to retrieve existing tag: %v", err)
-		}
+	// Insert the tag if it doesn't exist
+	query = `
+			INSERT INTO tags (name)
+			VALUES ($1)
+			RETURNING id;
+	`
+	err = db.QueryRow(query, tagName).Scan(&tagID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to add tag: %v", err)
 	}
 
 	return tagID, nil
