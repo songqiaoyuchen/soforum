@@ -15,6 +15,7 @@ type Thread struct {
 	Content   string   `json:"content"`
 	Category  string   `json:"category"`
 	Tags      []string `json:"tags"`
+	Votes     int      `json:"votes"`
 	CreatedAt string   `json:"created_at"`
 }
 
@@ -57,102 +58,91 @@ func CreateThread(db *sql.DB, thread *Thread) (*Thread, error) {
 	return thread, nil
 }
 
-func GetThreads(db *sql.DB, page, limit int, category, search, tag string) ([]Thread, error) {
+func GetThreads(db *sql.DB, page int, limit int, category string, search string) ([]Thread, error) {
 	offset := (page - 1) * limit
-	var params []interface{}
-	var conditions []string
 
-	// Base query
-	query := `
-	SELECT t.id, u.username, t.title, t.content, c.name AS category, t.created_at
-	FROM threads t
-	INNER JOIN users u ON t.user_id = u.id
-	INNER JOIN categories c ON t.category_id = c.id
+	baseQuery := `
+		SELECT DISTINCT 
+			t.id,
+			u.username,
+			t.title,
+			t.content,
+			c.name as category,
+			t.created_at,
+			ARRAY_AGG(DISTINCT tags.name) as tags,
+			COALESCE(SUM(v.vote), 0) as votes
+		FROM threads t
+		INNER JOIN users u ON t.user_id = u.id
+		INNER JOIN categories c ON t.category_id = c.id
+		LEFT JOIN thread_tags tt ON t.id = tt.thread_id
+		LEFT JOIN tags ON tt.tag_id = tags.id
+		LEFT JOIN votes v ON t.id = v.thread_id
 	`
 
-	// Dynamic WHERE clause
+	whereClause := "WHERE 1=1"
+	args := []interface{}{}
+	argCount := 1
+
 	if category != "" {
-		conditions = append(conditions, fmt.Sprintf("c.name = $%d", len(params)+1))
-		params = append(params, category)
+		whereClause += fmt.Sprintf(" AND c.name = $%d", argCount)
+		args = append(args, category)
+		argCount++
 	}
 
 	if search != "" {
-		conditions = append(conditions, fmt.Sprintf("(t.title ILIKE $%d OR t.content ILIKE $%d)", len(params)+1, len(params)+1))
-		params = append(params, "%"+search+"%")
+		whereClause += fmt.Sprintf(" AND (t.title ILIKE $%d OR t.content ILIKE $%d)", argCount, argCount)
+		searchPattern := "%" + search + "%"
+		args = append(args, searchPattern)
+		argCount++
 	}
 
-	if tag != "" {
-		// Join with thread_tags and tags table to filter threads by tags
-		conditions = append(conditions, fmt.Sprintf("t.id IN (SELECT tt.thread_id FROM thread_tags tt JOIN tags tg ON tt.tag_id = tg.id WHERE tg.name ILIKE $%d)", len(params)+1))
-		params = append(params, "%"+tag+"%")
-	}
+	query := fmt.Sprintf(`
+		%s
+		%s
+		GROUP BY t.id, u.username, t.title, t.content, c.name, t.created_at
+		ORDER BY t.created_at DESC
+		LIMIT $%d OFFSET $%d
+	`, baseQuery, whereClause, argCount, argCount+1)
 
-	// Append conditions if any
-	if len(conditions) > 0 {
-		query += "WHERE " + strings.Join(conditions, " AND ") + " "
-	}
+	args = append(args, limit, offset)
 
-	// Add ORDER BY, LIMIT, and OFFSET
-	query += fmt.Sprintf("ORDER BY t.created_at DESC LIMIT $%d OFFSET $%d", len(params)+1, len(params)+2)
-	params = append(params, limit, offset)
-
-	// Query threads
-	rows, err := db.Query(query, params...)
+	rows, err := db.Query(query, args...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error executing query: %v", err)
 	}
 	defer rows.Close()
 
 	var threads []Thread
-	threadIndexMap := make(map[int]int) // Map thread ID to index in slice
-
 	for rows.Next() {
 		var thread Thread
-		if err := rows.Scan(&thread.ID, &thread.Username, &thread.Title, &thread.Content, &thread.Category, &thread.CreatedAt); err != nil {
-			return nil, err
+		var tags []sql.NullString
+
+		err := rows.Scan(
+			&thread.ID,
+			&thread.Username,
+			&thread.Title,
+			&thread.Content,
+			&thread.Category,
+			&thread.CreatedAt,
+			pq.Array(&tags),
+			&thread.Votes,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
-		thread.Tags = []string{}
-		threadIndexMap[thread.ID] = len(threads)
+
+		thread.Tags = make([]string, 0)
+		for _, tag := range tags {
+			if tag.Valid {
+				thread.Tags = append(thread.Tags, tag.String)
+			}
+		}
+
 		threads = append(threads, thread)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	// Fetch tags
-	if len(threads) > 0 {
-		threadIDs := make([]int, 0, len(threadIndexMap))
-		for id := range threadIndexMap {
-			threadIDs = append(threadIDs, id)
-		}
-
-		tagQuery := `
-			SELECT tt.thread_id, tg.name
-			FROM thread_tags tt
-			INNER JOIN tags tg ON tt.tag_id = tg.id
-			WHERE tt.thread_id = ANY($1)
-			`
-		tagRows, err := db.Query(tagQuery, pq.Array(threadIDs))
-		if err != nil {
-			return nil, err
-		}
-		defer tagRows.Close()
-
-		for tagRows.Next() {
-			var threadID int
-			var tagName string
-			if err := tagRows.Scan(&threadID, &tagName); err != nil {
-				return nil, err
-			}
-			if idx, exists := threadIndexMap[threadID]; exists {
-				threads[idx].Tags = append(threads[idx].Tags, tagName)
-			}
-		}
-
-		if err := tagRows.Err(); err != nil {
-			return nil, err
-		}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %v", err)
 	}
 
 	return threads, nil
@@ -298,4 +288,54 @@ func DeleteThread(db *sql.DB, threadID int) error {
 	query := "DELETE FROM threads WHERE id = $1"
 	_, err := db.Exec(query, threadID)
 	return err
+}
+
+func GetSingleThread(db *sql.DB, threadID int) (*Thread, error) {
+	query := `
+		SELECT 
+			t.id,
+			u.username,
+			t.title,
+			t.content,
+			c.name as category,
+			t.created_at,
+			ARRAY_AGG(DISTINCT tags.name) as tags
+		FROM threads t
+		INNER JOIN users u ON t.user_id = u.id
+		INNER JOIN categories c ON t.category_id = c.id
+		LEFT JOIN thread_tags tt ON t.id = tt.thread_id
+		LEFT JOIN tags ON tt.tag_id = tags.id
+		WHERE t.id = $1
+		GROUP BY t.id, u.username, t.title, t.content, c.name, t.created_at
+	`
+
+	var thread Thread
+	var tags []sql.NullString
+
+	err := db.QueryRow(query, threadID).Scan(
+		&thread.ID,
+		&thread.Username,
+		&thread.Title,
+		&thread.Content,
+		&thread.Category,
+		&thread.CreatedAt,
+		pq.Array(&tags),
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	// Convert sql.NullString array to string array
+	thread.Tags = make([]string, 0)
+	for _, tag := range tags {
+		if tag.Valid {
+			thread.Tags = append(thread.Tags, tag.String)
+		}
+	}
+
+	return &thread, nil
 }

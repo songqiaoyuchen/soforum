@@ -17,11 +17,11 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const fetchedOnce = useRef(false); // Avoid React Strict Mode Re-render, no effects on production
-  const { searchQuery, category } = useSelector((state: RootState) => state.filters);
+  const { searchQuery } = useSelector((state: RootState) => state.filters);
 
   // Get category from URL params
   const params = useParams();
-  const categoryFromUrl = params.category as string;
+  const category = params.category as string;
 
   async function loadThreads(pageNumber: number, reset: boolean = false) {
     setLoading(true);
@@ -32,7 +32,7 @@ export default function HomePage() {
     }
 
     try {
-      const newThreads = await fetchThreads(pageNumber, 10, categoryFromUrl, searchQuery);
+      const newThreads = await fetchThreads(pageNumber, 10, category, searchQuery);
       setThreads((prevThreads) => [...prevThreads, ...newThreads]);
       setHasMore(newThreads.length >= 10);
     } catch (error) {
@@ -78,11 +78,12 @@ export default function HomePage() {
         overflowY: 'auto',
       }}
     >
-          <Box sx={{backgroundColor: 'rgba(255, 255, 255, 0.3)', 
-      marginTop: 7, 
-      marginBottom: 2,
-      height: '150px', 
-      width: '100%'}}>CATEGORY BANNER</Box>
+      <Box sx={{
+        backgroundImage: `url('/images/${category}.jpg')`,
+        marginTop: 7, 
+        marginBottom: 2,
+        height: '150px', 
+        width: '100%'}}></Box>
       <Box sx={{ 
         width: '100%',
         maxWidth: {md: '600px', xl: '900px'},

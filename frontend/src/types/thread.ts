@@ -5,6 +5,7 @@ export interface Thread {
   content: string;
   category: string;
   tags: string[];
+  votes: number;
   created_at: string
 }
 
@@ -25,3 +26,7 @@ export interface ThreadComment {
 export interface CommentData {
   content: string;
 } 
+
+export interface VoteData {
+  vote: 1 | -1;
+}

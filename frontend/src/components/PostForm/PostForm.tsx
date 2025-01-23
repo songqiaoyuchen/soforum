@@ -18,6 +18,8 @@ import {
 import { validPost } from '@utils/validInputs';
 import { editThread, postThread } from '@api/thread';
 import { Thread } from '@/types/thread';
+import store from '@store';
+import { showSnackbar } from '@store/slices/snackbarSlice';
 
 function PostForm(props: {initialThread: Thread | null}) {
   const router = useRouter();
@@ -26,9 +28,22 @@ function PostForm(props: {initialThread: Thread | null}) {
   const [category, setCategory] = useState(props.initialThread?.category ?? '');
   const [tags, setTags] = useState<string[]>(props.initialThread?.tags ?? []);
   const [errors, setErrors] = useState({ title: '', content: '', category: '' });
-  const [serverMsg, setServerMsg] = useState('');
 
-  const categories = ['general', 'art', 'music', 'academics'];
+  const categories = [
+    'general',
+    'technology',
+    'science',
+    'gaming',
+    'movies',
+    'music',
+    'sports',
+    'books',
+    'art',
+    'travel',
+    'food',
+    'academics',
+  ];
+  
 
   function resetFields() {
     setTitle(props.initialThread?.title || '');
@@ -65,11 +80,16 @@ function PostForm(props: {initialThread: Thread | null}) {
       } else {
         response = await postThread(postData);
       }
-      setServerMsg(response.message);
-      resetFields();
+      if (response.success) {
+        store.dispatch(showSnackbar({message: 'Post successful', severity: 'success'}));
+        router.push("/");
+      } else {
+        store.dispatch(showSnackbar({message: 'Post failed' + response.message, severity: 'error'}));
+        resetFields();
+      }
     } catch (error) {
       console.error('Unexpected error:', error);
-      setServerMsg('Sorry, an unexpected error has occurred.');
+      store.dispatch(showSnackbar({message: 'Post failed: Unexpected error', severity: 'error'}));
     }
   }
 
@@ -178,8 +198,6 @@ function PostForm(props: {initialThread: Thread | null}) {
             Post
           </Button>
         </Box>
-
-        {serverMsg && <Box color="primary">{serverMsg}</Box>}
       </Box>
     </Box>
   );

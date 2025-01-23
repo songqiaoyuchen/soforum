@@ -82,11 +82,11 @@ export default async function ThreadPage({ params }: { params: { id: string } })
       boxShadow: 3,
     }}>
       <Box sx={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
-      {/* Title */}
-      <Typography variant="h4" sx={{ color: "white", marginBottom: "10px" }}>
-        {thread.title}
-      </Typography>
-      <ThreadActions id={Number(id)} />
+        {/* Title */}
+        <Typography variant="h4" sx={{ color: "white", marginBottom: "10px" }}>
+          {thread.title}
+        </Typography>
+        <ThreadActions id={Number(id)} ownername={thread.username}/>
       </Box>
 
       {/* Category and Author */}
@@ -133,7 +133,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
       </Box>
 
       {/* Interaction Bar*/}
-      <InteractionsBar initialVotes={0} threadId={Number(id)}/>
+      <InteractionsBar initialVotes={0} threadId={Number(id)} userVote={thread.votes == 1 ? "upvoted" : thread.votes == -1 ? "downvoted" : null}/>
       <Comments threadID={Number(id)}/>
     </Box>
     <CommentDialog threadID={Number(id)} />

@@ -10,7 +10,7 @@ function ThreadCard(props: { thread: Thread }) {
   const router = useRouter();
 
   // Helper to parse SQL timestamp into a valid ISO string
-  const parseSQLTimestamp = (timestamp: string) => {
+  function parseSQLTimestamp(timestamp: string) {
     const isoString = timestamp.replace(' ', 'T').split('.')[0]; // Replace space with 'T' and trim after seconds
     return new Date(isoString);
   };
@@ -18,7 +18,7 @@ function ThreadCard(props: { thread: Thread }) {
   const parsedDate = parseSQLTimestamp(props.thread.created_at);
   const relativeTime = formatDistanceToNowStrict(parsedDate, { addSuffix: true });
 
-  const handleClick = () => {
+  function handleClick() {
     setLoading(true);
     router.push(`/threads/${props.thread.id}`);
   };
@@ -116,7 +116,7 @@ function ThreadCard(props: { thread: Thread }) {
         ))}
       </Box>
         {/* Interaction Bar */}
-        <InteractionsBar threadId={props.thread.id} initialVotes={0}/>
+        <InteractionsBar threadId={props.thread.id} initialVotes={props.thread.votes}/>
       </Box>
     </Box>
   );

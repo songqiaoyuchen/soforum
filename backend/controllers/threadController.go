@@ -63,7 +63,6 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	limitStr := c.DefaultQuery("limit", "10") // Default to 10 if not provided
 	category := c.DefaultQuery("category", "")
 	search := c.DefaultQuery("search", "")
-	tag := c.DefaultQuery("tag", "")
 
 	// Convert page and limit to integers
 	page, err := strconv.Atoi(pageStr)
@@ -79,10 +78,20 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	}
 
 	// Get threads from database
-	threads, err := models.GetThreads(db, page, limit, category, search, tag)
+	threads, err := models.GetThreads(db, page, limit, category, search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve threads"})
 		return
+	}
+
+	// Count votes for each thread
+	for i := range threads {
+		netVotes, err := models.CountVote(db, threads[i].ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to count votes"})
+			return
+		}
+		threads[i].Votes = netVotes
 	}
 
 	// Return the threads as a JSON response
@@ -103,6 +112,14 @@ func GetSingleThread(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch thread"})
 		return
 	}
+
+	netVotes, err := models.CountVote(db, thread.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to count votes"})
+		return
+	}
+
+	thread.Votes = netVotes
 
 	c.JSON(http.StatusOK, gin.H{"thread": thread})
 }

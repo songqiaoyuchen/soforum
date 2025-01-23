@@ -66,6 +66,23 @@ func createTables() {
 			name VARCHAR(255) UNIQUE NOT NULL
 		);
 
+		-- Insert initial entries into the categories table
+		INSERT INTO categories (name)
+		VALUES
+				('general'),
+				('technology'),
+				('science'),
+				('gaming'),
+				('movies'),
+				('music'),
+				('sports'),
+				('books'),
+				('art'),
+				('travel'),
+				('food'),
+				('academics')
+		ON CONFLICT (name) DO NOTHING;
+
 		-- Threads table
 		CREATE TABLE IF NOT EXISTS threads (
 			id SERIAL PRIMARY KEY,

@@ -6,14 +6,13 @@ import store from '@store';
 import { SearchBox, StyledInputBase, SearchIconWrapper } from './Search.styles';
 import SearchIcon from '@mui/icons-material/Search';
 
-const Search: React.FC = () => {
+function Search() {
   const [inputValue, setInputValue] = useState('');
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       // Dispatch the search query when the "Enter" key is pressed
       store.dispatch(setSearchQuery(inputValue));
-      setInputValue('');
     }
   };
 

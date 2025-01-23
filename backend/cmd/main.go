@@ -50,6 +50,16 @@ func main() {
 			controllers.DeleteComment(c, config.DB)
 		})
 	}
+	voteGroup := router.Group("/threads/:thread_id/votes")
+	voteGroup.Use(middlewares.JWTAuthMiddleware())
+	{
+		voteGroup.POST("", func(c *gin.Context) {
+			controllers.CastVote(c, config.DB)
+		})
+		voteGroup.DELETE("", func(c *gin.Context) {
+			controllers.DeleteVote(c, config.DB)
+		})
+	}
 	router.POST("/signup", func(c *gin.Context) {
 		controllers.UserSignup(c, config.DB)
 	})
@@ -64,6 +74,9 @@ func main() {
 	})
 	router.GET("/threads/:thread_id/comments", func(c *gin.Context) {
 		controllers.GetComments(c, config.DB)
+	})
+	router.GET("/threads/:thread_id/votes", func(c *gin.Context) {
+		controllers.CountVotes(c, config.DB)
 	})
 
 	// Run the server

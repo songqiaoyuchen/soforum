@@ -10,7 +10,25 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 
-const categories = ['general', 'art', 'music', 'academics'];
+const categories = [
+  'General',
+  'Technology',
+  'Science',
+  'Gaming',
+  'Movies',
+  'Music',
+  'Sports',
+  'Books',
+  'Art',
+  'Travel',
+  'Food',
+  'Academics',
+];
+
+
+function capitalizeFirstLetter(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 function Sidenav() {
   return (
@@ -31,7 +49,7 @@ function Sidenav() {
           {/* !!NEED TO WRAP HERE LATER!! */}
           <ListItemText primary='CATEGORIES' slotProps={{primary: {fontSize: '16px'}}} sx={{padding: '0px 24px'}}/> 
           {categories.map((category) => (
-            <ListItem key={category} text={category} icon={TagOutlinedIcon} href={`/${category}`}/>
+            <ListItem key={category} text={capitalizeFirstLetter(category)} icon={TagOutlinedIcon} href={`/${category}`}/>
           ))}
         </List>
       </StyledBox>
