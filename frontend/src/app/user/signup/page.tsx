@@ -21,6 +21,9 @@ import { Card, SignUpContainer} from './styles';
 
 // Static Assets
 import { GoogleIcon } from '../../../../public/icons/customIcons';
+import { showSnackbar } from '@store/slices/snackbarSlice';
+import store from '@store';
+import { useRouter } from 'next/navigation';
 
 interface SignupData {
   username: string;
@@ -29,6 +32,7 @@ interface SignupData {
 }
 
 function SignUp() {
+  const router = useRouter()
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,8 +85,9 @@ function SignUp() {
     try {
       const response = await axios.post('http://localhost:8080/signup', formData);
       if (response.status === 201) {
-        console.log('Signup successful:', response.data.message);
+        store.dispatch(showSnackbar({message: 'Login successful', severity: 'success'}));
         setServerMessage('Signup successful!');
+        router.push('/');
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 400) {

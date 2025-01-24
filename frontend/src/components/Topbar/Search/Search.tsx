@@ -11,8 +11,8 @@ function Search() {
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      // Dispatch the search query when the "Enter" key is pressed
       store.dispatch(setSearchQuery(inputValue));
+      setInputValue('');
     }
   };
 

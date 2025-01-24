@@ -5,10 +5,6 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Typography from '@mui/material/Typography';
-import ContentCut from '@mui/icons-material/ContentCut';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import ContentPaste from '@mui/icons-material/ContentPaste';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { useMediaQuery, useTheme } from '@mui/material';
@@ -16,6 +12,7 @@ import { useSelector } from 'react-redux';
 import store, { RootState } from '@store';
 import { closeMenu } from '@store/slices/menuSlice';
 import { clearAuthState } from '@store/slices/authSlice';
+import { AccountBox } from '@mui/icons-material';
 
 
 function ProfilePopup() {
@@ -47,30 +44,9 @@ function ProfilePopup() {
       }}>
         <MenuItem>
           <ListItemIcon>
-            <ContentCut fontSize="small" />
+            <AccountBox />
           </ListItemIcon>
-          <ListItemText>Cut</ListItemText>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            ⌘X
-          </Typography>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <ContentCopy fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Copy</ListItemText>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            ⌘C
-          </Typography>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <ContentPaste fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Paste</ListItemText>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            ⌘V
-          </Typography>
+          <ListItemText>Profile</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>

@@ -5,6 +5,7 @@ import (
 	"backend/utils"
 	"database/sql"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -38,11 +39,13 @@ func UserSignup(c *gin.Context, db *sql.DB) {
 	// Check if the username / email is already taken
 	_, err := models.GetUserIDByUsername(newUser.Username, db)
 	if err == nil {
+		log.Printf("Error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username already taken"})
 		return
 	}
 	_, err = models.GetUserIDByEmail(newUser.Email, db)
 	if err == nil {
+		log.Printf("Error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "email already signed up"})
 		return
 	}

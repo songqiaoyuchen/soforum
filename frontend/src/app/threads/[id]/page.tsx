@@ -133,7 +133,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
       </Box>
 
       {/* Interaction Bar*/}
-      <InteractionsBar initialVotes={0} threadId={Number(id)} userVote={thread.votes == 1 ? "upvoted" : thread.votes == -1 ? "downvoted" : null}/>
+      <InteractionsBar initialVotes={thread.votes} threadId={Number(id)} userVote={thread.votes == 1 ? "upvoted" : thread.votes == -1 ? "downvoted" : null}/>
       <Comments threadID={Number(id)}/>
     </Box>
     <CommentDialog threadID={Number(id)} />

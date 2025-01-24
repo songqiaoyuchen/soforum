@@ -78,7 +78,7 @@ export default function HomePage() {
         marginTop: 7,
       }}>
         {/* Content Section */}
-        <Box sx={{ padding: '0px 0px 16px 4px' }}>SORTING SECTION</Box>
+        {/* <Box sx={{ padding: '0px 0px 16px 4px' }}>SORTING SECTION</Box> */}
         <Stack spacing={2}>
           {threads.map((thread) => (
             <ThreadCard key={thread.id} thread={thread} />
