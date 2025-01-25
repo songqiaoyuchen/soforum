@@ -1,7 +1,6 @@
 'use client';
 // To be separated into a compoennt dialog
 // Essentials
-import axios from 'axios';
 import { useState } from 'react';
 
 // Utils Functions
@@ -94,7 +93,7 @@ function SignUp() {
         setServerMessage(response.message);
       }
     } catch (err) {
-      store.dispatch(showSnackbar({message: 'Signup failed', severity: 'error'}));
+      store.dispatch(showSnackbar({message: 'Signup failed' + err, severity: 'error'}));
       setServerMessage('Sorry, an unexpected error occurred');
     } finally {
       resetInputs();
