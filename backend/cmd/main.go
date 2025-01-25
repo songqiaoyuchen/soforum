@@ -5,6 +5,8 @@ import (
 	"backend/controllers"
 	"backend/middlewares"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -24,6 +26,11 @@ func main() {
 	router.Use(middlewares.SetupCORS())
 
 	// Define routes and pass the db connection
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Welcome to the API!",
+		})
+	})
 	threadGroup := router.Group("/threads")
 	threadGroup.Use(middlewares.JWTAuthMiddleware())
 	{
@@ -92,5 +99,14 @@ func main() {
      \ \____________\\ \_______\\ \_______\\ \_______\\ \_______\\ \__\    \ \__\\ \_______\
       \|____________| \|_______| \|_______| \|_______| \|_______| \|__|     \|__| \|_______|                                                                                
   `)
-	router.Run(":8080")
+	// Get the port from the environment variable or use a default value
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default to port 8080 if no environment variable is set
+	}
+
+	// Start the server
+	if err := router.Run(":" + port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
