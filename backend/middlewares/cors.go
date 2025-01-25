@@ -10,6 +10,7 @@ func SetupCORS() gin.HandlerFunc {
 	// Define allowed origins
 	allowedOrigins := []string{
 		"http://localhost:3000",
+		"https://soforum.vercel.app",
 	}
 
 	corsConfig := cors.Config{
