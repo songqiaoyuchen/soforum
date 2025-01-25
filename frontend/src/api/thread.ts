@@ -13,7 +13,6 @@ export async function fetchThreads(
   : Promise<Thread[]> 
 {
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000));
     const response = await axios.get(`${API_URL}/threads`, {
       params: {
         page: pageNumber,
@@ -34,7 +33,6 @@ export async function fetchThreads(
 // Function to fetch a single thread from the database
 export async function fetchSingleThread(threadID: number): Promise<Thread | null> {
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000));
     const response = await axios.get(`${API_URL}/threads/${threadID}`);
     return response.data ? response.data.thread : null;
   } catch (error) {

@@ -5,7 +5,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchComments(threadID: number): Promise<ThreadComment[]> {
   try {
-    await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay to test loading UI
     const response = await axios.get(`${API_URL}/threads/${threadID}/comments`);
     
     return response.data ? response.data.comments : [];

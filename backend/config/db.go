@@ -55,6 +55,10 @@ func InitDB() {
 
 	fmt.Println("Successfully connected to the database!")
 
+	_, err = DB.Exec(`CREATE EXTENSION IF NOT EXISTS citext;`)
+	if err != nil {
+		log.Fatal("Error enabling citext extension: ", err)
+	}
 	// Initialize tables or migrations
 	createTables()
 }
