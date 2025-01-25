@@ -52,7 +52,7 @@ export async function postThread(postData: PostData)
 
   try {
     const response = await axios.post(
-      '${API_URL}/threads/post', 
+      `${API_URL}/threads/post`, 
       postData,
       {
         headers: {

@@ -23,3 +23,22 @@ export async function userLogin(formData: { username: string; password: string }
     }
   }
 }
+
+export async function userSignup(formData: { username: string; password: string })
+  : Promise<{success: boolean, message: string}> 
+{
+  try {
+    const response = await axios.post(`${API_URL}/signup`, formData);
+    if (response.status === 201) {
+      return { success: true, message: "Signup Successful!"};
+    } else {
+      return { success: false, message: response.data.message };
+    }
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response?.status === 400) {
+      return { success: false, message: `Signup failed: ${err.response.data.error || 'Invalid input or missing fields'}`};
+    } else {
+      return { success: false, message: 'Sorry, an unexpected error occurred' };
+    }
+  }
+}

@@ -24,6 +24,7 @@ import { GoogleIcon } from '../../../../public/icons/customIcons';
 import { showSnackbar } from '@store/slices/snackbarSlice';
 import store from '@store';
 import { useRouter } from 'next/navigation';
+import { userSignup } from '@api/user';
 
 interface SignupData {
   username: string;
@@ -83,20 +84,18 @@ function SignUp() {
     };
 
     try {
-      const response = await axios.post('http://localhost:8080/signup', formData);
-      if (response.status === 201) {
-        store.dispatch(showSnackbar({message: 'Login successful', severity: 'success'}));
+      const response = await userSignup(formData);
+      if (response.success) {
+        store.dispatch(showSnackbar({message: 'Signup successful', severity: 'success'}));
         setServerMessage('Signup successful!');
         router.push('/');
+      } else {
+        store.dispatch(showSnackbar({message: 'Signup failed', severity: 'error'}));
+        setServerMessage(response.message);
       }
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 400) {
-        console.error('Signup failed:', err.response.data.error);
-        setServerMessage(`Signup failed: ${err.response.data.error || 'Invalid input or missing fields'}`);
-      } else {
-        console.error('Unexpected error:', err);
-        setServerMessage('Sorry, an unexpected error occurred');
-      }
+      store.dispatch(showSnackbar({message: 'Signup failed', severity: 'error'}));
+      setServerMessage('Sorry, an unexpected error occurred');
     } finally {
       resetInputs();
     }
