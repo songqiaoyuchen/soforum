@@ -2,19 +2,24 @@ package config
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
 
-// LoadEnv loads environment variables from the .env file.
 func LoadEnv() {
-	// Get the absolute path to the .env file
-	envFilePath := filepath.Join("..", ".env")
+	env := os.Getenv("ENV") // Check the environment (e.g., "development" or "production")
 
-	// Load environment variables from the .env file
-	err := godotenv.Load(envFilePath)
-	if err != nil {
-		log.Fatalf("Error loading .env file from %s: %v", envFilePath, err)
+	if env == "development" {
+		// Load the .env file only in development mode
+		envFilePath := filepath.Join("..", ".env")
+		err := godotenv.Load(envFilePath)
+		if err != nil {
+			log.Fatalf("Error loading .env file from %s: %v", envFilePath, err)
+		}
+		log.Println(".env file loaded successfully")
+	} else {
+		log.Println("Running in production mode, using environment variables from Render")
 	}
 }
