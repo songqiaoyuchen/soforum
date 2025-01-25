@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -13,21 +14,40 @@ var DB *sql.DB
 
 // InitDB initializes the database and creates tables if they don't exist
 func InitDB() {
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-
-	if dbUser == "" || dbPassword == "" || dbName == "" {
-		log.Fatal("Database credentials are not set in environment variables")
+	// Load .env in development
+	if os.Getenv("RENDER") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("No .env file found, using environment variables")
+		}
 	}
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", dbUser, dbPassword, dbName)
+	// Get the database connection string
+	connStr := os.Getenv("DATABASE_URL")
+	if connStr == "" {
+		// Fallback to individual components for local dev
+		dbUser := os.Getenv("DB_USER")
+		dbPassword := os.Getenv("DB_PASSWORD")
+		dbName := os.Getenv("DB_NAME")
+
+		if dbUser == "" || dbPassword == "" || dbName == "" {
+			log.Fatal("Database credentials are not set in environment variables")
+		}
+
+		connStr = fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", dbUser, dbPassword, dbName)
+	} else {
+		// Ensure SSL mode is set for production
+		connStr += "?sslmode=require"
+	}
+
+	// Connect to the database
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Error opening database: ", err)
 	}
 
+	// Test the connection
 	err = DB.Ping()
 	if err != nil {
 		log.Fatal("Error connecting to the database: ", err)
@@ -35,6 +55,7 @@ func InitDB() {
 
 	fmt.Println("Successfully connected to the database!")
 
+	// Initialize tables or migrations
 	createTables()
 }
 
