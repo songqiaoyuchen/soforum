@@ -171,7 +171,7 @@ function PostForm(props: {initialThread: Thread | null}) {
               const { key, ...tagProps } = getTagProps({ index });
               return (
                 <Chip
-                  key={option}
+                  key={key}
                   label={`#${option}`}
                   {...tagProps}
                   sx={{

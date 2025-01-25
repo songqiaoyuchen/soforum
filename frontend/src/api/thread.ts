@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { Thread, PostData } from '@/types/thread';
+import { getErrorMessage } from '@utils/handleError';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Function to fetch threads from the database
 export async function fetchThreads(
@@ -12,7 +14,7 @@ export async function fetchThreads(
 {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    const response = await axios.get(`http://localhost:8080/threads`, {
+    const response = await axios.get(`${API_URL}/threads`, {
       params: {
         page: pageNumber,
         limit: limit,
@@ -33,7 +35,7 @@ export async function fetchThreads(
 export async function fetchSingleThread(threadID: number): Promise<Thread | null> {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    const response = await axios.get(`http://localhost:8080/threads/${threadID}`);
+    const response = await axios.get(`${API_URL}/threads/${threadID}`);
     return response.data ? response.data.thread : null;
   } catch (error) {
     console.error('Error fetching single thread:', error);
@@ -52,7 +54,7 @@ export async function postThread(postData: PostData)
 
   try {
     const response = await axios.post(
-      'http://localhost:8080/threads/post', 
+      '${API_URL}/threads/post', 
       postData,
       {
         headers: {
@@ -69,21 +71,12 @@ export async function postThread(postData: PostData)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message =  error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error posting thread: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error posting thread: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
-  } 
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
 
   return output
 }
@@ -99,7 +92,7 @@ export async function deleteThread(threadID: number)
 
   try {
     const response = await axios.delete(
-      `http://localhost:8080/threads/${threadID}`, 
+      `${API_URL}/threads/${threadID}`, 
       {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -115,21 +108,12 @@ export async function deleteThread(threadID: number)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message =  error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error deleting thread: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error deleting thread: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
-  } 
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
 
   return output
 }
@@ -145,7 +129,7 @@ export async function editThread(threadID: number, postData: PostData)
 
   try {
     const response = await axios.put(
-      `http://localhost:8080/threads/${threadID}`, 
+      `${API_URL}/threads/${threadID}`, 
       postData,
       {
         headers: {
@@ -162,21 +146,12 @@ export async function editThread(threadID: number, postData: PostData)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message =  error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error editing thread: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error editing thread: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
-  } 
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
 
   return output
 }

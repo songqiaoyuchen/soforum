@@ -1,10 +1,11 @@
 import axios from 'axios';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function userLogin(formData: { username: string; password: string })
   : Promise<{success: boolean, message: string}> 
 {
   try {
-    const response = await axios.post('http://localhost:8080/login', formData);
+    const response = await axios.post(`${API_URL}/login`, formData);
     if (response.status === 200) {
       sessionStorage.setItem('jwt', response.data.token);
       return { success: true, message: "Login Successful!"};

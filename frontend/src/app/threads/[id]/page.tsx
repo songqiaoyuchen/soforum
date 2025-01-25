@@ -6,7 +6,7 @@ import Comments from "@components/Comments";
 import ThreadActions from "@components/ThreadActions";
 import InteractionsBar from "@components/InteractionBar";
 
-export default async function ThreadPage({ params }: { params: { id: string } }) {
+export default async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   let thread: Thread | null;
 

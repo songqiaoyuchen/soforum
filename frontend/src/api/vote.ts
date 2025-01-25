@@ -1,5 +1,7 @@
 import axios from "axios";
 import { VoteData } from "@/types/thread";
+import { getErrorMessage } from "@utils/handleError";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function castVote(threadID: number, vote: VoteData)
   : Promise<{ success: boolean, message: string }> 
@@ -12,7 +14,7 @@ export async function castVote(threadID: number, vote: VoteData)
 
   try {
     const response = await axios.post(
-      `http://localhost:8080/threads/${threadID}/votes`,
+      `${API_URL}/threads/${threadID}/votes`,
       vote,
       {
         headers: {
@@ -29,20 +31,11 @@ export async function castVote(threadID: number, vote: VoteData)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message = error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error casting vote: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error casting vote: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
   }
 
   return output;
@@ -58,7 +51,7 @@ export async function deleteVote(threadID: number)
 
   try {
     const response = await axios.delete(
-      `http://localhost:8080/threads/${threadID}/votes`,
+      `${API_URL}/threads/${threadID}/votes`,
       {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -74,20 +67,11 @@ export async function deleteVote(threadID: number)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message = error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error deleting vote: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error deleting vote: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
   }
 
   return output;
@@ -99,7 +83,7 @@ export async function checkVoteState(username: string, threadID: number)
   let output = -0;
   try {
     const response = await axios.get(
-      `http://localhost:8080/${username}/${threadID}/vote_state`,
+      `${API_URL}/${username}/${threadID}/vote_state`,
     );
 
     if (response.status === 200) {

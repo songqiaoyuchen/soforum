@@ -1,10 +1,12 @@
 import { CommentData, ThreadComment } from "@/types/thread";
+import { getErrorMessage } from "@utils/handleError";
 import axios from "axios";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchComments(threadID: number): Promise<ThreadComment[]> {
   try {
     await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay to test loading UI
-    const response = await axios.get(`http://localhost:8080/threads/${threadID}/comments`);
+    const response = await axios.get(`${API_URL}/threads/${threadID}/comments`);
     
     return response.data ? response.data.comments : [];
   } catch (error) {
@@ -25,7 +27,7 @@ export async function postComment(threadID: number, comment: CommentData)
 
   try {
     const response = await axios.post(
-      `http://localhost:8080/threads/${threadID}/comments`, 
+      `${API_URL}/threads/${threadID}/comments`, 
       comment,
       {
         headers: {
@@ -42,21 +44,12 @@ export async function postComment(threadID: number, comment: CommentData)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message =  error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error posting comment: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error posting comment: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
-  } 
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
 
   return output
 }
@@ -72,7 +65,7 @@ export async function deleteComment(commentID: number)
 
   try {
     const response = await axios.delete(
-      `http://localhost:8080/threads/1/comments/${commentID}`, 
+      `${API_URL}/threads/1/comments/${commentID}`, 
       {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -88,21 +81,12 @@ export async function deleteComment(commentID: number)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message =  error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error deleting comment: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error deleting comment: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
-  } 
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
 
   return output
 }
@@ -118,7 +102,7 @@ export async function editComment(commentID: number, commentData: CommentData)
 
   try {
     const response = await axios.put(
-      `http://localhost:8080/threads/1/comments/${commentID}`, 
+      `${API_URL}/threads/1/comments/${commentID}`, 
       commentData,
       {
         headers: {
@@ -135,21 +119,12 @@ export async function editComment(commentID: number, commentData: CommentData)
       output.success = false;
       output.message = response.data.error;
     }
-  } catch (error: any) {
-    if (error.response) {
-      console.error('Server Error:', error.response.data.error || 'Unexpected error occurred');
-      output.success = false;
-      output.message =  error.response.data.error || 'Unexpected server error occurred.';
-    } else if (error.request) {
-      console.error("Error editing comment: no response from server");
-      output.success = false;
-      output.message = "No response from server, please check your connection.";
-    } else {
-      console.error('Error editing comment: ', error.message);
-      output.success = false;
-      output.message = "Failed to send request. Please try again.";
-    }
-  } 
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
 
   return output
 }

@@ -29,7 +29,7 @@ export default function ThreadActionMenu(props: { id: number, ownername: string}
     setAnchorEl(null);
   };
 
-  async function handleDelete(e: React.MouseEvent<HTMLElement>) {
+  async function handleDelete() {
     try {
       const response = await deleteThread(id);
       if (response.success) {
