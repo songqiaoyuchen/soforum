@@ -6,6 +6,7 @@ import { ThreadComment } from "@/types/thread";
 import CommentActions from "./CommentActions";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
+import CommentDialog from "./CommentDialog";
 
 export default function Comments({ threadID }: { threadID: number }) {
   const [comments, setComments] = useState<ThreadComment[]>([]);
@@ -65,6 +66,10 @@ export default function Comments({ threadID }: { threadID: number }) {
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
+
+  const updateComments = (newComment: ThreadComment) => {
+    setComments((prevComments) => [...prevComments, newComment]);
+  };
 
   return (
     <Box sx={{ width: "100%", marginTop: "20px" }}>
@@ -129,6 +134,7 @@ export default function Comments({ threadID }: { threadID: number }) {
           )}
         </Box>
       ))}
+      <CommentDialog threadID={threadID} updateComments={updateComments}/>
     </Box>
   );
 }

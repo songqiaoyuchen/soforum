@@ -60,6 +60,11 @@ func createTables() {
 		VALUES (2, 'admin', 'adminpass123', 'admin@example.com')
 		ON CONFLICT (id) DO NOTHING;
 
+		-- Insert reserved "guest" user
+		INSERT INTO users (id, username, password, email) 
+		VALUES (3, 'guest', 'guestpass123', 'guest@example.com')
+		ON CONFLICT (id) DO NOTHING;
+
 		-- Categories table
 		CREATE TABLE IF NOT EXISTS categories (
 			id SERIAL PRIMARY KEY,

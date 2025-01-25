@@ -1,6 +1,7 @@
-import { Toolbar, List, ListItemText, Divider} from '@mui/material';
+'use client';
+import { Toolbar, List, ListItemText, Divider, Drawer, useMediaQuery, useTheme } from '@mui/material';
 
-import { StyledBox, StyledDrawer } from './Sidenav.styles'
+import { StyledBox } from './Sidenav.styles'
 
 import ListItem from '@components/Sidenav/ListItem';
 
@@ -9,6 +10,10 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@store';
+import { closeSidenav } from '@store/slices/sidenavSlice';
+
 
 const categories = [
   'General',
@@ -25,16 +30,30 @@ const categories = [
   'Academics',
 ];
 
-
 function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function Sidenav() {
+  const dispatch = useDispatch();
+  const isOpen = useSelector((state: RootState) => state.sidenav.isOpen);
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
+
   return (
-    <StyledDrawer
-      variant="permanent"
-      sx={{ display: {xxs: 'none', sm: 'block'} }}
+    <Drawer
+      anchor={isLargeScreen ? 'left' : 'bottom'}
+      variant={isLargeScreen ? "persistent" : "temporary"} // Persistent on large screens
+      open={isOpen || isLargeScreen} // Always open on large screens
+      onClose={() => dispatch(closeSidenav())} // Close on backdrop click for temporary
+      sx={{
+        width: {xxs: '100%', xs: '300px'},
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: {xxs: '100%', xs: '300px'},
+          boxSizing: 'border-box',
+        },
+      }}
     >
       <Toolbar />
       <StyledBox>
@@ -53,7 +72,7 @@ function Sidenav() {
           ))}
         </List>
       </StyledBox>
-    </StyledDrawer>
+    </Drawer>
   )
 }
 

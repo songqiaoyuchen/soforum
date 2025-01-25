@@ -90,3 +90,33 @@ func CountVotes(c *gin.Context, db *sql.DB) {
 		"votes": netVotes,
 	})
 }
+
+func GetVoteState(c *gin.Context, db *sql.DB) {
+	// Parse thread ID from URL
+	threadID, err := strconv.Atoi(c.Param("thread_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid thread ID"})
+		return
+	}
+
+	username := c.Param("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
+		return
+	}
+
+	userID, err := models.GetUserIDByUsername(username, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user_id"})
+		return
+	}
+
+	// Fetch vote state
+	voteState, err := models.GetVoteStateByUserID(db, threadID, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve vote state"})
+	}
+
+	// Respond with vote state
+	c.JSON(http.StatusOK, voteState)
+}

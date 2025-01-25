@@ -116,7 +116,9 @@ function ThreadCard(props: { thread: Thread }) {
         ))}
       </Box>
         {/* Interaction Bar */}
-        <InteractionsBar threadId={props.thread.id} initialVotes={props.thread.votes}/>
+        <InteractionsBar 
+          threadId={props.thread.id} 
+          initialVotes={props.thread.votes}/>
       </Box>
     </Box>
   );

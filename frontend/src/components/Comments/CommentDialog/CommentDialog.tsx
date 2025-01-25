@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box } from '@mui/material';
 import store, { RootState } from '@store';
-import { closeDialog } from '@store/slices/commentDialogSlice';
+import { closeCommentDialog } from '@store/slices/commentDialogSlice';
 import { postComment } from '@api/comment';
 import { showSnackbar } from '@store/slices/snackbarSlice';
+import { ThreadComment } from '@/types/thread';
 
 
-function CommentDialog(props: {threadID: number}) {
+function CommentDialog(props: {threadID: number, updateComments: (newComment: ThreadComment) => void;}) {
   const [comment, setComment] = useState('');
   const isOpen = useSelector((state: RootState) => state.commentDialog.isOpen);
 
@@ -19,7 +20,8 @@ function CommentDialog(props: {threadID: number}) {
       try {
         const result = await postComment(props.threadID, {"content": comment});
         if (result.success) {
-          store.dispatch(closeDialog());
+          props.updateComments(result.comment);
+          store.dispatch(closeCommentDialog());
           store.dispatch(showSnackbar({message: 'Comment posted', severity: 'success'}));
         } else {
           store.dispatch(showSnackbar({message: 'Comment failed: ' + result.message, severity: 'error'}));
@@ -34,7 +36,7 @@ function CommentDialog(props: {threadID: number}) {
 
   function handleClose() {
     setComment("");
-    store.dispatch(closeDialog());
+    store.dispatch(closeCommentDialog());
   };
 
   return (

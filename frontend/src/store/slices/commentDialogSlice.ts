@@ -12,14 +12,14 @@ const commentDialogSlice = createSlice({
   name: 'commentDialog',
   initialState,
   reducers: {
-    openDialog(state) {
+    openCommentDialog(state) {
       state.isOpen = true;
     },
-    closeDialog(state) {
+    closeCommentDialog(state) {
       state.isOpen = false;
     },
   },
 });
 
-export const { openDialog, closeDialog } = commentDialogSlice.actions;
+export const { openCommentDialog, closeCommentDialog } = commentDialogSlice.actions;
 export default commentDialogSlice.reducer;

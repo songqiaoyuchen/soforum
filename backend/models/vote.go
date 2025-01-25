@@ -10,6 +10,12 @@ type Vote struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type VoteState struct {
+	ThreadID int    `json:"thread_id"`
+	Username string `json:"username"`
+	Vote     int    `json:"vote"` // 1 for upvote, -1 for downvote, 0 for no vote
+}
+
 func CreateVote(db *sql.DB, vote *Vote) (*Vote, error) {
 	query := `
   INSERT INTO votes (user_id, thread_id, vote)
@@ -62,4 +68,32 @@ func DeleteVote(db *sql.DB, threadID int, username string) error {
 
 	_, err = db.Exec(query, threadID, userID)
 	return err
+}
+
+func GetVoteStateByUserID(db *sql.DB, threadID int, userID int) (*VoteState, error) {
+	query := `
+		SELECT v.thread_id, v.vote, u.username
+		FROM votes v
+		INNER JOIN users u ON v.user_id = u.id
+		WHERE v.thread_id = $1 AND v.user_id = $2;
+	`
+
+	var voteState VoteState
+	err := db.QueryRow(query, threadID, userID).Scan(
+		&voteState.ThreadID,
+		&voteState.Vote,
+		&voteState.Username,
+	)
+	if err != nil {
+		// Handle case where no row is returned (user has not voted)
+		if err == sql.ErrNoRows {
+			return &VoteState{
+				ThreadID: threadID,
+				Vote:     0, // Default to 0 if no vote is found
+			}, nil
+		}
+		return nil, err // Return other errors
+	}
+
+	return &voteState, nil
 }

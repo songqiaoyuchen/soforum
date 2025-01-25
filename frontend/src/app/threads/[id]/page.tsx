@@ -5,7 +5,6 @@ import { fetchSingleThread } from "@/api/thread";
 import Comments from "@components/Comments";
 import ThreadActions from "@components/ThreadActions";
 import InteractionsBar from "@components/InteractionBar";
-import CommentDialog from "@components/CommentDialog";
 
 export default async function ThreadPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -39,7 +38,7 @@ export default async function ThreadPage({ params }: { params: { id: string } })
   }
 
   // Helper to parse SQL timestamp into a valid ISO string
-  const parseSQLTimestamp = (timestamp: string) => {
+  function parseSQLTimestamp(timestamp: string) {
     const isoString = timestamp.replace(" ", "T").split(".")[0]; // Replace space with 'T' and trim after seconds
     return new Date(isoString);
   };
@@ -133,10 +132,12 @@ export default async function ThreadPage({ params }: { params: { id: string } })
       </Box>
 
       {/* Interaction Bar*/}
-      <InteractionsBar initialVotes={thread.votes} threadId={Number(id)} userVote={thread.votes == 1 ? "upvoted" : thread.votes == -1 ? "downvoted" : null}/>
+      <InteractionsBar 
+        initialVotes={thread.votes} 
+        threadId={thread.id} 
+      />
       <Comments threadID={Number(id)}/>
     </Box>
-    <CommentDialog threadID={Number(id)} />
 
     </Box>
   );

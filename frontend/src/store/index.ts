@@ -5,6 +5,7 @@ import menuReducer from './slices/menuSlice';
 import snackbarReducer from './slices/snackbarSlice';
 import filterReducer from './slices/filterSlice';
 import commentDialogReducer from './slices/commentDialogSlice';
+import sidenavReducer from './slices/sidenavSlice';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     snackbar: snackbarReducer,
     filters: filterReducer,
     commentDialog: commentDialogReducer,
+    sidenav: sidenavReducer,
   }
 });
 

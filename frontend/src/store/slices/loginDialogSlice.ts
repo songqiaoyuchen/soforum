@@ -12,14 +12,14 @@ const loginDialogSlice = createSlice({
   name: 'loginDialog',
   initialState,
   reducers: {
-    openDialog: (state) => {
+    openLoginDialog: (state) => {
       state.isOpen = true;
     },
-    closeDialog: (state) => {
+    closeLoginDialog: (state) => {
       state.isOpen = false;
     },
   },
 });
 
-export const { openDialog, closeDialog } = loginDialogSlice.actions;
+export const { openLoginDialog, closeLoginDialog } = loginDialogSlice.actions;
 export default loginDialogSlice.reducer;

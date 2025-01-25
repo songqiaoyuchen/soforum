@@ -14,12 +14,13 @@ export async function fetchComments(threadID: number): Promise<ThreadComment[]> 
 }
 
 export async function postComment(threadID: number, comment: CommentData)
-  : Promise<{success: boolean, message: string}>
+  : Promise<{success: boolean, message: string, comment: ThreadComment}>
 {
   const token = sessionStorage.getItem('jwt');
   const output = {
     success: true,
-    message: "Thread posted successfully"
+    message: "Thread posted successfully",
+    comment: {} as ThreadComment
   };
 
   try {
@@ -35,7 +36,7 @@ export async function postComment(threadID: number, comment: CommentData)
     ); 
 
     if (response.status === 201) {
-      return output;
+      output.comment = response.data.comment;
     } else {
       console.error("Error posting thread: ", response.data.error)
       output.success = false;

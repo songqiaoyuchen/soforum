@@ -1,21 +1,42 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, IconButton, Typography, Tooltip } from "@mui/material";
 import { ThumbUp, ThumbDown, Comment } from "@mui/icons-material";
-import { openDialog } from "@store/slices/commentDialogSlice";
-import store from "@store";
-import { castVote, deleteVote } from "@/api/vote";
+import { openCommentDialog } from "@store/slices/commentDialogSlice";
+import { openLoginDialog } from "@store/slices/loginDialogSlice";
+import store, { RootState } from "@store";
+import { castVote, deleteVote, checkVoteState } from "@/api/vote";
+import { useSelector } from "react-redux";
 
 interface InteractionsBarProps {
   threadId: number;
   initialVotes: number;
-  userVote: "upvoted" | "downvoted" | null;
 }
 
-export default function InteractionsBar({ threadId, initialVotes, userVote }: InteractionsBarProps) {
+export default function InteractionsBar({ threadId, initialVotes }: InteractionsBarProps) {
+  const username = useSelector((state: RootState) => state.auth.username);
   const [votes, setVotes] = useState(initialVotes);
-  const [voteState, setVoteState] = useState<"upvoted" | "downvoted" | null>(userVote);
+  const [voteState, setVoteState] = useState<"upvoted" | "downvoted" | null>(null);
+
+  async function getVoteState() {
+    try {
+      const voteState = await checkVoteState(username ? username : "guest", threadId);
+      if (voteState === 1) {
+        setVoteState("upvoted");
+      } else if (voteState === -1) {
+        setVoteState("downvoted");
+      } else {
+        setVoteState(null);
+      }
+    } catch (error) {
+      console.error("Error in fetching vote state:", error);
+    }
+  }
+
+  useEffect(() => {
+    getVoteState();
+  }, [username]);
 
   async function handleVote(vote: "upvote" | "downvote" | null) {
     try {
@@ -47,6 +68,24 @@ export default function InteractionsBar({ threadId, initialVotes, userVote }: In
     }
   }
 
+  function onUpvote(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (username) {
+      handleVote(voteState === "upvoted" ? null : "upvote");
+    } else {
+      store.dispatch(openLoginDialog());
+    }
+  }
+
+  function onDownvote(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (username) {
+      handleVote(voteState === "downvoted" ? null : "downvote");
+    } else {
+      store.dispatch(openLoginDialog());
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -70,7 +109,7 @@ export default function InteractionsBar({ threadId, initialVotes, userVote }: In
           <IconButton
             aria-label="Upvote"
             color={voteState === "upvoted" ? "primary" : "default"}
-            onClick={() => handleVote(voteState === "upvoted" ? null : "upvote")}
+            onClick={onUpvote}
           >
             <ThumbUp />
           </IconButton>
@@ -80,7 +119,7 @@ export default function InteractionsBar({ threadId, initialVotes, userVote }: In
           <IconButton
             aria-label="Downvote"
             color={voteState === "downvoted" ? "primary" : "default"}
-            onClick={() => handleVote(voteState === "downvoted" ? null : "downvote")}
+            onClick={onDownvote}
           >
             <ThumbDown />
           </IconButton>
@@ -89,7 +128,7 @@ export default function InteractionsBar({ threadId, initialVotes, userVote }: In
 
       {/* Comment Section */}
       <Box
-        onClick={() => store.dispatch(openDialog())}
+        onClick={() => store.dispatch(openCommentDialog())}
         sx={{
           display: "flex",
           alignItems: "center",

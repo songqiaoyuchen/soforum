@@ -92,3 +92,21 @@ export async function deleteVote(threadID: number)
 
   return output;
 }
+
+export async function checkVoteState(username: string, threadID: number)
+  : Promise<number> 
+{
+  let output = -0;
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/${username}/${threadID}/vote_state`,
+    );
+
+    if (response.status === 200) {
+      output = response.data.vote;
+    }
+  } catch (error) {
+    console.error("Error checking vote state: ", error);
+  }
+  return output;
+}

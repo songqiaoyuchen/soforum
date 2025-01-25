@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // Redux
 import { useSelector } from 'react-redux';
 import store, { RootState } from '@store';
-import { closeDialog } from '@store/slices/loginDialogSlice';
+import { closeLoginDialog } from '@store/slices/loginDialogSlice';
 
 import Image from 'next/image';
 const frogLook = '/images/frog-look.webp';
@@ -52,7 +52,7 @@ function CustomDialog() {
     setPasswordError('');
     setAuthError('');
     setLoading(false);
-    store.dispatch(closeDialog());
+    store.dispatch(closeLoginDialog());
   }
 
   function validateInputs() {
@@ -80,7 +80,7 @@ function CustomDialog() {
       const result = await userLogin({username: username, password: password});
       if (result.success) {
         syncAuth()
-        store.dispatch(closeDialog());
+        store.dispatch(closeLoginDialog());
         store.dispatch(showSnackbar({message: 'Login successful', severity: 'success'}));
       } else {
         store.dispatch(showSnackbar({message: 'Login failed: ' + result.message, severity: 'error'}));

@@ -78,6 +78,9 @@ func main() {
 	router.GET("/threads/:thread_id/votes", func(c *gin.Context) {
 		controllers.CountVotes(c, config.DB)
 	})
+	router.GET("/:username/:thread_id/vote_state", func(c *gin.Context) {
+		controllers.GetVoteState(c, config.DB)
+	})
 
 	// Run the server
 	fmt.Println(`

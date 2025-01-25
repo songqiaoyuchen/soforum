@@ -9,9 +9,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Search from '@components/Topbar/Search';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store';
-import { openDialog } from '@store/slices/loginDialogSlice';
-import { openMenu } from '@store/slices/menuSlice';
+import { openLoginDialog } from '@store/slices/loginDialogSlice';
+import { toggleSidenav } from '@store/slices/sidenavSlice';
 import { Chip } from '@mui/material';
+import { openMenu } from '@store/slices/menuSlice';
 
 function Topbar() {
   const dispatch = useDispatch(); 
@@ -22,7 +23,7 @@ function Topbar() {
     if (isLoggedIn) {
       dispatch(openMenu());
     } else {
-      dispatch(openDialog());
+      dispatch(openLoginDialog());
     }
   }
 
@@ -42,6 +43,7 @@ function Topbar() {
             sx={{ mr: 2, 
               display: {xs: 'block', sm: 'none'}
             }}
+            onClick={() => dispatch(toggleSidenav())}
           >
             <MenuIcon />
           </IconButton>
@@ -51,7 +53,7 @@ function Topbar() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            sx={{ display: { xxs: 'none', sm: 'block' } }}
           >
             FORUM
           </Typography>
@@ -61,7 +63,6 @@ function Topbar() {
           <Search />
           {/* Profile Icon */}    
           <Chip
-            // avatar={<Avatar alt="user" src="?" sx={{height: 40}}/>}
             label={username || "LOGIN"}
             variant="filled"
             onClick={onProfileClick}
@@ -72,9 +73,7 @@ function Topbar() {
             }}
           />
         </Toolbar>
-
       </AppBar>
-
     </Box>
   );
 }
