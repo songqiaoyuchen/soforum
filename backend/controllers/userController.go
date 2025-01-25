@@ -112,3 +112,56 @@ func UserLogin(c *gin.Context, db *sql.DB) {
 		"token":   token,
 	})
 }
+
+func UpdateUser(c *gin.Context, db *sql.DB) {
+	username := c.Param("username") // Directly retrieve the username from the URL
+
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid username"})
+		return
+	}
+
+	// Get the username from JWT middleware
+	currentUsername := c.GetString("username")
+	if currentUsername != username {
+		c.JSON(http.StatusForbidden, gin.H{"error": "unauthorised user"})
+		return
+	}
+
+	// Parse the new content from request body
+	var updatedUser models.User
+	if err := c.ShouldBindJSON(&updatedUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload"})
+		return
+	}
+
+	// Edit the user
+	if err := models.UpdateUser(db, currentUsername, updatedUser.Username, updatedUser.Bio); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user updated successfully"})
+}
+
+func GetUser(c *gin.Context, db *sql.DB) {
+	// Get the username from the URL parameter
+	username := c.Param("username")
+
+	// Call the model to fetch user details
+	user, err := models.GetUserByUsername(db, username)
+	if err != nil {
+		// Handle error if user not found or any other error
+		log.Println("Error fetching user:", err)
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Return user profile info
+	c.JSON(http.StatusOK, gin.H{
+		"username": user.Username,
+		"email":    user.Email,
+		"bio":      user.Bio,
+		"joined":   user.CreatedAt,
+	})
+}

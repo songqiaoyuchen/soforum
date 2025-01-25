@@ -31,6 +31,15 @@ func main() {
 			"message": "Welcome to the API!",
 		})
 	})
+	userGroup := router.Group("/user")
+	{
+		userGroup.PUT("/:username", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+			controllers.UpdateUser(c, config.DB)
+		})
+		userGroup.GET("/:username", func(c *gin.Context) {
+			controllers.GetUser(c, config.DB)
+		})
+	}
 	threadGroup := router.Group("/threads")
 	threadGroup.Use(middlewares.JWTAuthMiddleware())
 	{

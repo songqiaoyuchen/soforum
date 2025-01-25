@@ -13,8 +13,10 @@ import { openLoginDialog } from '@store/slices/loginDialogSlice';
 import { toggleSidenav } from '@store/slices/sidenavSlice';
 import { Chip } from '@mui/material';
 import { openMenu } from '@store/slices/menuSlice';
+import { useRouter } from 'next/navigation';
 
 function Topbar() {
+  const router = useRouter();
   const dispatch = useDispatch(); 
   const username = useSelector((state: RootState) => state.auth.username);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
@@ -41,7 +43,7 @@ function Topbar() {
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2, 
-              display: {xs: 'block', sm: 'none'}
+              display: {sm: 'block', md: 'none'}
             }}
             onClick={() => dispatch(toggleSidenav())}
           >
@@ -53,6 +55,7 @@ function Topbar() {
             variant="h6"
             noWrap
             component="div"
+            onClick={() => router.push('/')}
             sx={{ display: { xxs: 'none', sm: 'block' } }}
           >
             FORUM

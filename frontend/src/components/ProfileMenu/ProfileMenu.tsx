@@ -13,13 +13,16 @@ import store, { RootState } from '@store';
 import { closeMenu } from '@store/slices/menuSlice';
 import { clearAuthState } from '@store/slices/authSlice';
 import { AccountBox } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
 
 function ProfilePopup() {
+  const router = useRouter();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
   const isOpen = useSelector((state: RootState) => state.menu.isOpen);
+  const username = useSelector((state: RootState) => state.auth.username)
 
   function handleClose() {
     store.dispatch(closeMenu())
@@ -29,6 +32,11 @@ function ProfilePopup() {
     store.dispatch(clearAuthState());
     sessionStorage.removeItem('jwt');
     store.dispatch(closeMenu());
+  }
+
+  function onProfileClick() {
+    router.push(`/user/${username}`)
+    store.dispatch(closeMenu())
   }
 
   return (
@@ -42,7 +50,7 @@ function ProfilePopup() {
       <MenuList sx={{
         width: {xxs: '100%', xs: '300px'}
       }}>
-        <MenuItem>
+        <MenuItem onClick={onProfileClick}>
           <ListItemIcon>
             <AccountBox />
           </ListItemIcon>

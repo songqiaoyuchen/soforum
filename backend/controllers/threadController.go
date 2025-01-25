@@ -63,6 +63,8 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	limitStr := c.DefaultQuery("limit", "10") // Default to 10 if not provided
 	category := c.DefaultQuery("category", "")
 	search := c.DefaultQuery("search", "")
+	username := c.DefaultQuery("username", "")
+	sort := c.DefaultQuery("sort", "")
 
 	// Convert page and limit to integers
 	page, err := strconv.Atoi(pageStr)
@@ -78,7 +80,7 @@ func GetThreads(c *gin.Context, db *sql.DB) {
 	}
 
 	// Get threads from database
-	threads, err := models.GetThreads(db, page, limit, category, search)
+	threads, err := models.GetThreads(db, page, limit, category, search, username, sort)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve threads"})
 		return

@@ -3,20 +3,32 @@
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { SvgIconComponent } from '@mui/icons-material';
 import { usePathname, useRouter } from "next/navigation";
+import { setSort } from "@store/slices/filterSlice";
+import { useSelector } from "react-redux";
+import store, { RootState } from "@store";
 
 interface CustomListItemProps {
   text: string,
   icon: SvgIconComponent,
-  href: string
+  href?: string
 }
 
 function CustomListItem(props: CustomListItemProps) {
   const router = useRouter();
-  const pathname = usePathname(); // Get the current path
-  const isSelected =pathname === props.href;
+  const pathname = usePathname();
+  const { sort } = useSelector((state: RootState) => state.filters)
+
+  const isSelected = sort === props.text || pathname === props.href;
 
   function handleNav() {
-    router.push(props.href)
+    if (props.href) {
+      router.push(props.href.toLowerCase())
+    } else if (props.text == "Recent" || props.text == "Saved") {
+      alert("view histroy / saving threads not yet implemented")
+    } else {
+      router.push("/")
+      store.dispatch(setSort(props.text.toLowerCase()))
+    }
   }
 
   return (

@@ -58,10 +58,10 @@ function Sidenav() {
       <Toolbar />
       <StyledBox>
         <List>
-          <ListItem key='Home' text='Home' icon={HomeIcon} href="/"/>
-          <ListItem key='Trending' text='Trending' icon={LocalFireDepartmentOutlinedIcon} href="/trending"/>
-          <ListItem key='Recent' text='Recent' icon={ScheduleIcon} href="/recent"/>
-          <ListItem key='Saved' text='Saved' icon={BookmarkBorderIcon} href="/saved"/>
+          <ListItem key='Home' text='Home' icon={HomeIcon} />
+          <ListItem key='Trending' text='Trending' icon={LocalFireDepartmentOutlinedIcon} />
+          <ListItem key='Recent' text='Recent' icon={ScheduleIcon} />
+          <ListItem key='Saved' text='Saved' icon={BookmarkBorderIcon} />
         </List>
         <Divider sx={{margin: '0px 16px'}}/>
         <List>

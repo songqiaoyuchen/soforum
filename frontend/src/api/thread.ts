@@ -9,6 +9,8 @@ export async function fetchThreads(
   limit: number = 10, 
   category?: string, 
   search?: string,
+  username?: string,
+  sort?: string
 )
   : Promise<Thread[]> 
 {
@@ -18,7 +20,9 @@ export async function fetchThreads(
         page: pageNumber,
         limit: limit,
         category: category,
-        search: search
+        search: search,
+        username: username,
+        sort: sort
       }
     });
     

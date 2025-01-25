@@ -8,6 +8,7 @@ import AppProviders from '@providers/AppProviders';
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import NavigationListener from "@components/NavListener";
+import Head from "next/head";
 
 // Dynamically import components that aren't needed for initial render
 const LoginDialog = dynamic(() => import('@components/LoginDialog'));
@@ -26,7 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head />
+      <Head>
+        <title>Soforum</title>
+        <link rel="icon" href="../../public/favicon.ico" />
+      </Head>
       <body>
         <AppProviders>
           <NavigationListener />

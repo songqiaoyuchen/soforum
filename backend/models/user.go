@@ -6,10 +6,12 @@ import (
 )
 
 type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
+	ID        int    `json:"id"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Email     string `json:"email"`
+	Bio       string `json:"bio"`
+	CreatedAt string `json:"created_at"`
 }
 
 // Function to create a new user in the database
@@ -52,4 +54,41 @@ func GetUserPasswordByUsername(username string, db *sql.DB) (string, error) {
 		return "", fmt.Errorf("error querying database: %v", err)
 	}
 	return user.Password, nil
+}
+
+func UpdateUser(db *sql.DB, oldname, newname, bio string) error {
+	userID, err := GetUserIDByUsername(oldname, db)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`UPDATE users SET username = $1, bio = $2 WHERE id = $3`, newname, bio, userID)
+	return err
+}
+
+func GetUserByUsername(db *sql.DB, username string) (*User, error) {
+	// Query to fetch user details by username
+	query := `SELECT id, username, email, bio, created_at FROM users WHERE username = $1`
+	row := db.QueryRow(query, username)
+
+	// Map result to User struct
+	var user User
+	var bio sql.NullString
+
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &bio, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	// Assign bio value if it is valid, otherwise set to an empty string
+	if bio.Valid {
+		user.Bio = bio.String
+	} else {
+		user.Bio = ""
+	}
+
+	return &user, nil
 }

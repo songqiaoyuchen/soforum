@@ -14,7 +14,7 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const fetchedOnce = useRef(false); // Avoid React Strict Mode Re-render, no effects on production
-  const { searchQuery, category } = useSelector((state: RootState) => state.filters);
+  const { searchQuery, category, sort } = useSelector((state: RootState) => state.filters);
 
   async function loadThreads(pageNumber: number, reset: boolean = false) {
     setLoading(true);
@@ -25,7 +25,7 @@ export default function HomePage() {
     }
 
     try {
-      const newThreads = await fetchThreads(pageNumber, 10, category, searchQuery);
+      const newThreads = await fetchThreads(pageNumber, 10, category, searchQuery, undefined, sort);
       setThreads((prevThreads) => [...prevThreads, ...newThreads]);
       setHasMore(newThreads.length >= 10);
     } catch (error) {
@@ -40,7 +40,7 @@ export default function HomePage() {
     if (!fetchedOnce.current) {
       loadThreads(1, true); 
     }
-  }, [searchQuery, category]); // Trigger reset when filters change
+  }, [searchQuery, category, sort]); // Trigger reset when filters change
   
   useEffect(() => {
     if (!fetchedOnce.current) {

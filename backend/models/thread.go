@@ -58,9 +58,10 @@ func CreateThread(db *sql.DB, thread *Thread) (*Thread, error) {
 	return thread, nil
 }
 
-func GetThreads(db *sql.DB, page int, limit int, category string, search string) ([]Thread, error) {
+func GetThreads(db *sql.DB, page int, limit int, category string, search string, username string, sort string) ([]Thread, error) {
 	offset := (page - 1) * limit
 
+	// Base query for fetching threads
 	baseQuery := `
 		SELECT DISTINCT 
 			t.id,
@@ -83,12 +84,14 @@ func GetThreads(db *sql.DB, page int, limit int, category string, search string)
 	args := []interface{}{}
 	argCount := 1
 
+	// Filter by category if provided
 	if category != "" {
 		whereClause += fmt.Sprintf(" AND c.name = $%d", argCount)
 		args = append(args, category)
 		argCount++
 	}
 
+	// Search for threads by title or content if provided
 	if search != "" {
 		whereClause += fmt.Sprintf(" AND (t.title ILIKE $%d OR t.content ILIKE $%d)", argCount, argCount)
 		searchPattern := "%" + search + "%"
@@ -96,16 +99,35 @@ func GetThreads(db *sql.DB, page int, limit int, category string, search string)
 		argCount++
 	}
 
+	// Filter by username if provided
+	if username != "" {
+		whereClause += fmt.Sprintf(" AND u.username = $%d", argCount)
+		args = append(args, username)
+		argCount++
+	}
+
+	// Determine sorting method
+	var orderClause string
+	if sort == "trending" {
+		// Rank threads by total votes in descending order
+		orderClause = "ORDER BY votes DESC"
+	} else {
+		// Default: Sort by creation date
+		orderClause = "ORDER BY t.created_at DESC"
+	}
+
+	// Final query with filters and sorting applied
 	query := fmt.Sprintf(`
 		%s
 		%s
 		GROUP BY t.id, u.username, t.title, t.content, c.name, t.created_at
-		ORDER BY t.created_at DESC
+		%s
 		LIMIT $%d OFFSET $%d
-	`, baseQuery, whereClause, argCount, argCount+1)
+	`, baseQuery, whereClause, orderClause, argCount, argCount+1)
 
 	args = append(args, limit, offset)
 
+	// Execute the query
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("error executing query: %v", err)
@@ -141,6 +163,7 @@ func GetThreads(db *sql.DB, page int, limit int, category string, search string)
 		threads = append(threads, thread)
 	}
 
+	// Check for errors after iterating rows
 	if err = rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating rows: %v", err)
 	}
