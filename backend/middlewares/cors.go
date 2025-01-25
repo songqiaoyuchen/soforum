@@ -9,15 +9,18 @@ import (
 func SetupCORS() gin.HandlerFunc {
 	// Define allowed origins
 	allowedOrigins := []string{
-		"http://localhost:3000",
-		"https://soforum.vercel.app",
+		"http://localhost:3000",      // Development frontend
+		"https://soforum.vercel.app", // Production frontend
 	}
 
+	// Create the CORS configuration
 	corsConfig := cors.Config{
-		AllowOrigins: allowedOrigins,                                      // Allowed origins
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Allowed HTTP methods
-		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"}, // Allowed headers
+		AllowOrigins:     allowedOrigins,                                      // Allowed origins
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Allowed HTTP methods
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // Allowed headers
+		AllowCredentials: true,                                                // Allow cookies/authorization headers
 	}
 
+	// Return the middleware
 	return cors.New(corsConfig)
 }
