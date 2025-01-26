@@ -42,6 +42,9 @@ func main() {
 		userGroup.GET("/:username/saved_threads", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 			controllers.GetSavedThreads(c, config.DB)
 		})
+		userGroup.GET("/:username/saved_state/:thread_id", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+			controllers.CheckSavedState(c, config.DB)
+		})
 		userGroup.POST("/:username/save_thread/:thread_id", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
 			controllers.SaveThread(c, config.DB)
 		})

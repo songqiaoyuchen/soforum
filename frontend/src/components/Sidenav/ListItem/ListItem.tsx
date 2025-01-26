@@ -19,19 +19,24 @@ function CustomListItem(props: CustomListItemProps) {
   const pathname = usePathname();
   const { sort } = useSelector((state: RootState) => state.filters)
   const username = useSelector((state: RootState) => state.auth.username);
-  const isSelected = sort === props.text.toLowerCase() || pathname === props.href?.toLowerCase() || pathname === props.text.toLowerCase();
+  const isSelected = 
+    sort === "trending" ? props.text.toLowerCase() === "trending"
+    : pathname === "/" ? props.text.toLowerCase() === "home"
+    : pathname === props.href?.toLowerCase() || pathname === props.text.toLowerCase();
 
   function handleNav() {
-    if (props.href) {
-      router.push(props.href.toLowerCase())
-    } else if (props.text == "Recent") {
-      alert("view histroy of threads not yet implemented")
-    } else if (props.text == "Saved") {
+    if (props.text == "Saved") {
       if (username) {
+        store.dispatch(setSort(""))
         router.push("/saved")
       } else {
         store.dispatch(openLoginDialog());
       }
+    } else if (props.href) {
+      store.dispatch(setSort(""))
+      router.push(props.href.toLowerCase())
+    } else if (props.text == "Recent") {
+      alert("view histroy of threads not yet implemented")
     } else {
       router.push("/")
       store.dispatch(setSort(props.text.toLowerCase()))

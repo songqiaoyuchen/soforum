@@ -467,3 +467,20 @@ func GetSavedThreads(db *sql.DB, username string, page, limit int) ([]Thread, er
 
 	return threads, nil
 }
+
+func CheckSavedState(db *sql.DB, username string, threadID int) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM user_threads WHERE user_id = $1 AND thread_id = $2)`
+
+	userID, err := GetUserIDByUsername(username, db)
+	if err != nil {
+		return false, err
+	}
+
+	var saved bool
+	err = db.QueryRow(query, userID, threadID).Scan(&saved)
+	if err != nil {
+		return false, err
+	}
+
+	return saved, nil
+}

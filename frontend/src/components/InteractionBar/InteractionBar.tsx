@@ -8,7 +8,8 @@ import { openLoginDialog } from "@store/slices/loginDialogSlice";
 import store, { RootState } from "@store";
 import { castVote, deleteVote, checkVoteState } from "@/api/vote";
 import { useSelector } from "react-redux";
-import { deleteSavedThread, saveThread } from "@api/thread";
+import { CheckSaveState, deleteSavedThread, saveThread } from "@api/thread";
+import { showSnackbar } from "@store/slices/snackbarSlice";
 
 interface InteractionsBarProps {
   threadId: number;
@@ -98,11 +99,24 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
 
   const [hasSaved, setHasSaved] = useState(false); // Initial state
 
+  async function checkSaveState() {
+    try {
+      const saved = await CheckSaveState(username ? username : "guest", threadId);
+      setHasSaved(saved);
+    } catch (error) {
+      console.error("Error in fetching save state:", error);
+    }
+  }
+
+  useEffect(() => {
+    checkSaveState();
+  }, [username]);
+
   // Save or unsave the thread
   async function handleSave(e: React.MouseEvent) {
     e.stopPropagation();
     if (!username || !threadId) {
-      console.error("Username or Thread ID is missing");
+      store.dispatch(openLoginDialog());
       return;
     }
 
@@ -112,12 +126,12 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
         const result = await deleteSavedThread(username, threadId);
         if (result.success) {
           setHasSaved(false);
-          console.log(result.message);
+          store.dispatch(showSnackbar({message: 'Thread unsaved', severity: 'success'}));
         } else {
-          console.error(result.message);
+          store.dispatch(showSnackbar({message: 'Failed to unsave: ' + result.message, severity: 'error'}));
         }
       } catch (error) {
-        console.error("Error in unsaving thread:", error);
+        store.dispatch(showSnackbar({message: 'Failed to unsave: ' + error, severity: 'error'}));
       }
     } else {
       // Save the thread
@@ -125,14 +139,14 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
         const result = await saveThread(username, threadId);
         if (result.success) {
           setHasSaved(true);
-          console.log(result.message);
+          store.dispatch(showSnackbar({message: 'Thread saved', severity: 'success'}));
         } else {
-          console.error(result.message);
+          store.dispatch(showSnackbar({message: 'Failed to save: ' + result.message, severity: 'error'}));
         }
       } catch (error) {
-        console.error("Error in saving thread:", error);
+          store.dispatch(showSnackbar({message: 'Failed to save: ' + error, severity: 'error'}));
       }
-  }
+    }
   };
 
   return (
@@ -204,7 +218,7 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
         "&:hover": { bgcolor: "rgba(255, 255, 255, 0.4)" }
       }}>
         <Tooltip title={hasSaved ? "Unsave" : "Save"}>
-          <IconButton onClick={handleSave}>
+          <IconButton>
             {hasSaved ? <Bookmark color="primary" /> : <BookmarkBorder />}
           </IconButton>
         </Tooltip>

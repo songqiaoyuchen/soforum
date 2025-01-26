@@ -52,6 +52,7 @@ function UserProfile() {
       if (response.success) {
         store.dispatch(showSnackbar({message: "Profile updated successfully!", severity: 'success'}));
         store.dispatch(setAuthState({isLoggedIn: true, username: newUsername}));
+        setIsEditing(false);
         router.push(`/user/${newUsername}`)
       } else {
         store.dispatch(showSnackbar({message: "Failed to update profile", severity: 'error'}));

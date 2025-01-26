@@ -253,3 +253,25 @@ export async function deleteSavedThread(username: string, threadID: number) {
 
   return output
 }
+
+export async function CheckSaveState(username: string, threadID: number) {
+  const token = sessionStorage.getItem('jwt');
+  try {
+    const response = await axios.get(`${API_URL}/user/${username}/saved_state/${threadID}`, 
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.status === 200) {
+      return response.data.saved;
+    } else {
+      console.error("Error checking save state: ", response.data.error)
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking save state:', error);
+    return false;
+  }
+}

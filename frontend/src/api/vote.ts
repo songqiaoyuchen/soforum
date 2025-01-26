@@ -80,7 +80,7 @@ export async function deleteVote(threadID: number)
 export async function checkVoteState(username: string, threadID: number)
   : Promise<number> 
 {
-  let output = -0;
+  let output = 0;
   try {
     const response = await axios.get(
       `${API_URL}/${username}/${threadID}/vote_state`,
