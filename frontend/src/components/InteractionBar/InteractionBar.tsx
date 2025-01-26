@@ -109,7 +109,9 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
   }
 
   useEffect(() => {
-    checkSaveState();
+    if (username) {
+      checkSaveState();
+    }
   }, [username]);
 
   // Save or unsave the thread
