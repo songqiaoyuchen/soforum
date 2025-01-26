@@ -155,6 +155,16 @@ func createTables() {
 			tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
 			PRIMARY KEY (thread_id, tag_id)
 		);
+
+		-- User-Threads table
+		CREATE TABLE IF NOT EXISTS user_threads (
+			user_id INT NOT NULL,
+			thread_id INT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (user_id, thread_id),
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (thread_id) REFERENCES threads(id) ON DELETE CASCADE
+		);
 	`
 
 	_, err := DB.Exec(query)

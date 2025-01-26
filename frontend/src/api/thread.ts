@@ -157,3 +157,99 @@ export async function editThread(threadID: number, postData: PostData)
 
   return output
 }
+
+export async function saveThread(username: string, threadID: number) 
+: Promise<{success: boolean, message: string}>
+{
+  const token = sessionStorage.getItem('jwt');
+  const output = {
+    success: true,
+    message: "Thread saved successfully"
+  };
+  try {
+    const response = await axios.post(`${API_URL}/user/${username}/save_thread/${threadID}`, 
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+    });
+    if (response.status === 200) {
+      return output;
+    } else {
+      console.error("Error saving thread: ", response.data.error)
+      output.success = false;
+      output.message = response.data.error;
+    }
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
+
+  return output
+};
+
+export async function fetchSavedThreads(  
+  pageNumber: number, 
+  limit: number = 10, 
+  username?: string,
+)
+: Promise<Thread[]> 
+{
+  const token = sessionStorage.getItem('jwt');
+  try {
+    const response = await axios.get(`${API_URL}/user/${username}/saved_threads`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      params: {
+        page: pageNumber,
+        limit: limit,
+      }
+    });
+    if (response.status === 200) {
+      return Array.isArray(response.data.threads) ? response.data.threads : [];
+    } else {
+      console.error("Error fetching saved threads: ", response.data.error)
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching threads:', error);
+    return []
+  }
+};
+
+export async function deleteSavedThread(username: string, threadID: number) {
+  const token = sessionStorage.getItem('jwt');
+  const output = {
+    success: true,
+    message: "Thread unsaved successfully"
+  };
+  try {
+    const response = await axios.delete(`${API_URL}/user/${username}/unsave_thread/${threadID}`, 
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.status === 200) {
+      return output;
+    } else {
+      console.error("Error unsaving thread: ", response.data.error)
+      output.success = false;
+      output.message = response.data.error;
+    }
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error(message);
+    output.success = false;
+    output.message = message;
+  }
+
+  return output
+}

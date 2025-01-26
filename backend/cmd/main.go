@@ -39,6 +39,15 @@ func main() {
 		userGroup.GET("/:username", func(c *gin.Context) {
 			controllers.GetUser(c, config.DB)
 		})
+		userGroup.GET("/:username/saved_threads", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+			controllers.GetSavedThreads(c, config.DB)
+		})
+		userGroup.POST("/:username/save_thread/:thread_id", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+			controllers.SaveThread(c, config.DB)
+		})
+		userGroup.DELETE("/:username/unsave_thread/:thread_id", middlewares.JWTAuthMiddleware(), func(c *gin.Context) {
+			controllers.RemoveSavedThread(c, config.DB)
+		})
 	}
 	threadGroup := router.Group("/threads")
 	threadGroup.Use(middlewares.JWTAuthMiddleware())

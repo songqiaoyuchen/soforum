@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { setSort } from "@store/slices/filterSlice";
 import { useSelector } from "react-redux";
 import store, { RootState } from "@store";
+import { openLoginDialog } from "@store/slices/loginDialogSlice";
 
 interface CustomListItemProps {
   text: string,
@@ -17,14 +18,20 @@ function CustomListItem(props: CustomListItemProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { sort } = useSelector((state: RootState) => state.filters)
-
-  const isSelected = sort === props.text || pathname === props.href;
+  const username = useSelector((state: RootState) => state.auth.username);
+  const isSelected = sort === props.text.toLowerCase() || pathname === props.href?.toLowerCase() || pathname === props.text.toLowerCase();
 
   function handleNav() {
     if (props.href) {
       router.push(props.href.toLowerCase())
-    } else if (props.text == "Recent" || props.text == "Saved") {
-      alert("view histroy / saving threads not yet implemented")
+    } else if (props.text == "Recent") {
+      alert("view histroy of threads not yet implemented")
+    } else if (props.text == "Saved") {
+      if (username) {
+        router.push("/saved")
+      } else {
+        store.dispatch(openLoginDialog());
+      }
     } else {
       router.push("/")
       store.dispatch(setSort(props.text.toLowerCase()))

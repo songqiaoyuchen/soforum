@@ -1,5 +1,5 @@
 import { Thread } from "@/types/thread";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Chip, Link } from "@mui/material";
 import { formatDistanceToNowStrict } from "date-fns";
 import { fetchSingleThread } from "@/api/thread";
 import Comments from "@components/Comments";
@@ -91,10 +91,10 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
       {/* Category and Author */}
       <Typography
           variant="subtitle2"
-          sx={{display: 'flex', gap: '20px', paddingBottom: '10px'}}>
+          sx={{display: 'flex', flexDirection: {xxs: 'column', xs: 'row'}, gap: {xxs: '0px', xs: '20px'}, paddingBottom: '10px'}}>
           <Box># {thread.category}</Box>
-          <Box>• {relativeTime} by {thread.username}</Box>
-        </Typography>
+          <Box>• {relativeTime} by <Link href={`/user/${thread.username}`}>{thread.username}</Link></Box>
+      </Typography>
 
       {/* Content */}
       <Typography

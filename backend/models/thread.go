@@ -362,3 +362,108 @@ func GetSingleThread(db *sql.DB, threadID int) (*Thread, error) {
 
 	return &thread, nil
 }
+
+func SaveThread(db *sql.DB, username string, threadID int) error {
+	query := `INSERT INTO user_threads (user_id, thread_id) VALUES ($1, $2)`
+
+	userID, err := GetUserIDByUsername(username, db)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(query, userID, threadID)
+	if err != nil {
+		return fmt.Errorf("error saving thread: %v", err)
+	}
+	return nil
+}
+
+func RemoveSavedThread(db *sql.DB, username string, threadID int) error {
+	query := `DELETE FROM user_threads WHERE user_id = $1 AND thread_id = $2`
+
+	userID, err := GetUserIDByUsername(username, db)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(query, userID, threadID)
+	if err != nil {
+		return fmt.Errorf("error removing saved thread: %v", err)
+	}
+	return nil
+}
+
+func GetSavedThreads(db *sql.DB, username string, page, limit int) ([]Thread, error) {
+	// Calculate offset
+	offset := (page - 1) * limit
+
+	// SQL query to get saved threads with pagination
+	query := `
+		SELECT DISTINCT 
+			t.id,
+			u.username,
+			t.title,
+			t.content,
+			c.name AS category,
+			t.created_at,
+			ARRAY_AGG(DISTINCT tags.name) AS tags,
+			COALESCE(SUM(v.vote), 0) AS votes
+		FROM threads t
+		INNER JOIN user_threads ut ON t.id = ut.thread_id
+		INNER JOIN users u ON t.user_id = u.id
+		INNER JOIN categories c ON t.category_id = c.id
+		LEFT JOIN thread_tags tt ON t.id = tt.thread_id
+		LEFT JOIN tags ON tt.tag_id = tags.id
+		LEFT JOIN votes v ON t.id = v.thread_id
+		WHERE ut.user_id = $1
+		GROUP BY t.id, u.username, c.name, t.created_at
+		ORDER BY t.created_at DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	// Get user ID by username
+	userID, err := GetUserIDByUsername(username, db)
+	if err != nil {
+		return nil, fmt.Errorf("error getting user ID: %v", err)
+	}
+
+	// Execute the query
+	rows, err := db.Query(query, userID, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving saved threads: %v", err)
+	}
+	defer rows.Close()
+
+	// Parse the results
+	var threads []Thread
+	for rows.Next() {
+		var thread Thread
+		var tags []sql.NullString
+
+		err := rows.Scan(
+			&thread.ID,
+			&thread.Username,
+			&thread.Title,
+			&thread.Content,
+			&thread.Category,
+			&thread.CreatedAt,
+			pq.Array(&tags),
+			&thread.Votes,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+
+		// Convert nullable tags to a slice of strings
+		thread.Tags = make([]string, 0)
+		for _, tag := range tags {
+			if tag.Valid {
+				thread.Tags = append(thread.Tags, tag.String)
+			}
+		}
+
+		threads = append(threads, thread)
+	}
+
+	return threads, nil
+}

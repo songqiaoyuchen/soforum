@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Box, IconButton, Typography, Tooltip } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Comment, BookmarkBorder, Bookmark } from "@mui/icons-material";
 import { openCommentDialog } from "@store/slices/commentDialogSlice";
 import { openLoginDialog } from "@store/slices/loginDialogSlice";
 import store, { RootState } from "@store";
 import { castVote, deleteVote, checkVoteState } from "@/api/vote";
 import { useSelector } from "react-redux";
+import { deleteSavedThread, saveThread } from "@api/thread";
 
 interface InteractionsBarProps {
   threadId: number;
@@ -86,6 +87,54 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
     }
   }
 
+  function onComment(e: React.MouseEvent) {
+    if (username) {
+      store.dispatch(openCommentDialog())
+    } else {
+      e.stopPropagation();
+      store.dispatch(openLoginDialog());
+    }
+  }
+
+  const [hasSaved, setHasSaved] = useState(false); // Initial state
+
+  // Save or unsave the thread
+  async function handleSave(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!username || !threadId) {
+      console.error("Username or Thread ID is missing");
+      return;
+    }
+
+    if (hasSaved) {
+      // Unsave the thread
+      try {
+        const result = await deleteSavedThread(username, threadId);
+        if (result.success) {
+          setHasSaved(false);
+          console.log(result.message);
+        } else {
+          console.error(result.message);
+        }
+      } catch (error) {
+        console.error("Error in unsaving thread:", error);
+      }
+    } else {
+      // Save the thread
+      try {
+        const result = await saveThread(username, threadId);
+        if (result.success) {
+          setHasSaved(true);
+          console.log(result.message);
+        } else {
+          console.error(result.message);
+        }
+      } catch (error) {
+        console.error("Error in saving thread:", error);
+      }
+  }
+  };
+
   return (
     <Box
       sx={{
@@ -128,7 +177,7 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
 
       {/* Comment Section */}
       <Box
-        onClick={() => store.dispatch(openCommentDialog())}
+        onClick={onComment}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -147,7 +196,6 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
         </Typography>
       </Box>
 
-      {/* Save
       <Box onClick={handleSave} sx={{
         display: 'flex',
         alignItems: 'center',
@@ -161,7 +209,7 @@ export default function InteractionsBar({ threadId, initialVotes }: Interactions
           </IconButton>
         </Tooltip>
         <Typography variant="body2" sx={{paddingRight: 1.5}}>{hasSaved ? "Unsave" : "Save"}</Typography>
-      </Box> */}
+      </Box> 
     </Box>
   );
 }

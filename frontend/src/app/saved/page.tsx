@@ -1,15 +1,12 @@
-'use client'
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { Box, Button, Stack, CircularProgress, Typography } from '@mui/material';
-import { fetchThreads } from '@api/thread';
+import { fetchSavedThreads } from '@api/thread';
 import { Thread } from '@/types/thread';
 import ThreadCard from '@components/ThreadCard';
 import { useSelector } from 'react-redux';
 import { RootState } from '@store';
-import { useParams } from 'next/navigation';
-
-export const dynamicParams = true;
 
 export default function HomePage() {
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -17,11 +14,8 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const fetchedOnce = useRef(false); // Avoid React Strict Mode Re-render, no effects on production
-  const { searchQuery, sort } = useSelector((state: RootState) => state.filters);
-
-  // Get category from URL params
-  const params = useParams();
-  const category = params.category as string;
+  const { searchQuery, category, sort } = useSelector((state: RootState) => state.filters);
+  const username = useSelector((state: RootState) => state.auth.username);
 
   async function loadThreads(pageNumber: number, reset: boolean = false) {
     setLoading(true);
@@ -32,7 +26,9 @@ export default function HomePage() {
     }
 
     try {
-      const newThreads = await fetchThreads(pageNumber, 10, category, searchQuery, undefined, sort);
+      console.log("Redux username:", username);
+
+      const newThreads = await fetchSavedThreads(pageNumber, 10, username || undefined);
       setThreads((prevThreads) => [...prevThreads, ...newThreads]);
       setHasMore(newThreads.length >= 10);
     } catch (error) {
@@ -44,16 +40,16 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if (!fetchedOnce.current) {
+    if (!fetchedOnce.current && username) {
       loadThreads(1, true); 
     }
-  }, [searchQuery, category]); // Trigger reset when filters change
+  }, [searchQuery, category, sort, username]); // Trigger reset when filters change
   
   useEffect(() => {
-    if (!fetchedOnce.current) {
+    if (!fetchedOnce.current && username) {
       loadThreads(page);
     }
-  }, [page]); 
+  }, [page, username]); 
 
   const handleSeeMoreClick = () => {
     setPage((prevPage) => prevPage + 1);
@@ -78,19 +74,11 @@ export default function HomePage() {
         overflowY: 'auto',
       }}
     >
-      <Box sx={{
-        backgroundImage: `url('/images/${category}.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        marginTop: 7, 
-        marginBottom: 2,
-        height: '150px', 
-        width: '100%'}}></Box>
       <Box sx={{ 
         width: '100%',
         maxWidth: {md: '600px', xl: '900px'},
         marginBottom: 2,
+        marginTop: 7,
       }}>
         {/* Content Section */}
         {/* <Box sx={{ padding: '0px 0px 16px 4px' }}>SORTING SECTION</Box> */}
@@ -131,3 +119,4 @@ export default function HomePage() {
     </Box>
   );
 }
+

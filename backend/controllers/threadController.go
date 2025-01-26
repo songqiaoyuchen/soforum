@@ -205,3 +205,126 @@ func DeleteThread(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "thread deleted successfully"})
 }
+
+func SaveThread(c *gin.Context, db *sql.DB) {
+	// Get the username from JWT middleware
+	username := c.GetString("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "unauthenticated user",
+		})
+		return
+	}
+
+	// Parse thread ID from URL
+	threadID, err := strconv.Atoi(c.Param("thread_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid thread ID",
+		})
+		return
+	}
+
+	err = models.SaveThread(db, username, threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Thread saved successfully",
+	})
+}
+
+func RemoveSavedThread(c *gin.Context, db *sql.DB) {
+	// Get the username from JWT middleware
+	username := c.GetString("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "unauthenticated user",
+		})
+		return
+	}
+
+	// Parse thread ID from URL
+	threadID, err := strconv.Atoi(c.Param("thread_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid thread ID",
+		})
+		return
+	}
+
+	err = models.RemoveSavedThread(db, username, threadID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Thread removed from saved list",
+	})
+}
+
+func GetSavedThreads(c *gin.Context, db *sql.DB) {
+	username := c.Param("username") // Directly retrieve the username from the URL
+
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "unauthenticated user",
+		})
+		return
+	}
+
+	// Get the username from JWT middleware
+	currentUsername := c.GetString("username")
+	if currentUsername != username {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "unauthorised user",
+		})
+		return
+	}
+
+	pageStr := c.DefaultQuery("page", "1")    // Default to 1 if not provided
+	limitStr := c.DefaultQuery("limit", "10") // Default to 10 if not provided
+	// Convert page and limit to integers
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page number"})
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit number"})
+		return
+	}
+
+	threads, err := models.GetSavedThreads(db, username, page, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"threads": threads,
+	})
+}

@@ -6,7 +6,6 @@ import { StyledBox } from './Sidenav.styles'
 import ListItem from '@components/Sidenav/ListItem';
 
 import HomeIcon from '@mui/icons-material/Home';
-import ScheduleIcon from '@mui/icons-material/Schedule';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import LocalFireDepartmentOutlinedIcon from '@mui/icons-material/LocalFireDepartmentOutlined';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
@@ -60,7 +59,7 @@ function Sidenav() {
         <List>
           <ListItem key='Home' text='Home' icon={HomeIcon} />
           <ListItem key='Trending' text='Trending' icon={LocalFireDepartmentOutlinedIcon} />
-          <ListItem key='Recent' text='Recent' icon={ScheduleIcon} />
+          {/* <ListItem key='Recent' text='Recent' icon={ScheduleIcon} /> */}
           <ListItem key='Saved' text='Saved' icon={BookmarkBorderIcon} />
         </List>
         <Divider sx={{margin: '0px 16px'}}/>
